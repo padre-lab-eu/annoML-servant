@@ -1,0 +1,31 @@
+## server
+server:
+    port: 9999
+
+spring:
+    datasource:
+
+        ## default connection pool
+        hikari:
+            connection-timeout: 20000
+            maximum-pool-size: 5
+
+        ## PostgreSQL
+        url: jdbc:postgresql://localhost:5432/annoml
+        username: annoml
+        password: AnnoML
+
+    #drop n create table again, good for testing, comment this in production
+    jpa:
+      hibernate:
+        ddl-auto: create
+      show-sql: true
+      generate-ddl: true
+
+      properties:
+        hibernate:
+          jdbc:
+            lob:
+              non_contextual_creation: true
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+

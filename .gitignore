@@ -1,0 +1,58 @@
+# Eclipse
+.classpath
+.project
+.settings/
+*#
+*~
+
+# Intellij
+.idea/
+.idea/*
+*.iml
+*.iws
+*.ipr
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+target/
+
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Byte-compiled / optimized / DLL files
+.DS*
+.idea*
+
+docker/buildfolder/**.yml
+docker/buildfolder/Dockerfile
+docker/buildfolder/**.jar
+docker/data/**
+
+*.log
+
+*.pem
+*.jks
+
