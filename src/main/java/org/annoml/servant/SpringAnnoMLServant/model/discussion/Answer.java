@@ -1,4 +1,4 @@
-package org.annoml.servant.SpringAnnoMLServant.model;
+package org.annoml.servant.SpringAnnoMLServant.model.discussion;
 
 import javax.persistence.Entity;
 

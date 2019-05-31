@@ -1,5 +1,7 @@
-package org.annoml.servant.SpringAnnoMLServant.model;
+package org.annoml.servant.SpringAnnoMLServant.model.discussion;
 
+import org.annoml.servant.SpringAnnoMLServant.model.AbstractEntity;
+import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,7 +20,7 @@ public abstract class AbstractPost extends AbstractEntity {
     private String body;
     @CreatedBy
     @ManyToOne
-    private User author;
+    private Author author;
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
@@ -35,11 +37,11 @@ public abstract class AbstractPost extends AbstractEntity {
         this.body = body;
     }
 
-    public User getAuthor() {
+    public Author getAuthor() {
         return author;
     }
 
-    public void setAuthor(User author) {
+    public void setAuthor(Author author) {
         this.author = author;
     }
 
