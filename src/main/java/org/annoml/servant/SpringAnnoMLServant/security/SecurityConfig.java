@@ -34,25 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // @formatter:off
-        http
-                .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/index.html", "/", "/static/**", "/favicon.ico").permitAll()
-
-                .antMatchers(HttpMethod.GET, "/questions/{id:" + REGEX_ID + "}/answers", "/questions/{id:" +  REGEX_ID + "}", "/questions/{qid:" + REGEX_ID + "}/answers/{aid:" + REGEX_ID + "}").permitAll()
-                .antMatchers(HttpMethod.POST, "/users/register").permitAll()
-                .regexMatchers(HttpMethod.GET, "/questions", "/questions\\?filter=unanswered", "/questions\\?filter=unsolved").permitAll()
-
-                .regexMatchers(HttpMethod.GET, "/questions\\?filter=answeredbyme").authenticated()
-                .antMatchers(HttpMethod.GET, "/users/user").authenticated()
-                .antMatchers(HttpMethod.POST, "/questions", "/questions/{id:" + REGEX_ID + "}/answers", "/questions/{qid:" + REGEX_ID + "}/answers/{aid:" + REGEX_ID + "}/setfav").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/questions/{id:" + REGEX_ID + "}", "/questions/{qid:" + REGEX_ID + "}/answers/{aid:" + REGEX_ID + "}").authenticated()
-
-                .anyRequest().denyAll().and()
-                .httpBasic().authenticationEntryPoint(new RestAuthEntryPoint()).and()
-                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
-                .logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK));
-        // @formatter:on
+        http.authorizeRequests().anyRequest().permitAll();
     }
 
     @Override

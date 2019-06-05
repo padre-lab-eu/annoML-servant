@@ -19,13 +19,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
-public class QAService {
+public class DiscussionService {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public QAService(QuestionRepository questionRepository, AnswerRepository answerRepository, ModelMapper modelMapper) {
+    public DiscussionService(QuestionRepository questionRepository, AnswerRepository answerRepository, ModelMapper modelMapper) {
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
         this.modelMapper = modelMapper;

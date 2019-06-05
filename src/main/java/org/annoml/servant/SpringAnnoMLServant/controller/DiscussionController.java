@@ -1,6 +1,6 @@
 package org.annoml.servant.SpringAnnoMLServant.controller;
 
-import org.annoml.servant.SpringAnnoMLServant.service.QAService;
+import org.annoml.servant.SpringAnnoMLServant.service.DiscussionService;
 import org.annoml.servant.SpringAnnoMLServant.dto.QuestionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,11 +15,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/discussion")
 public class DiscussionController {
-    private final QAService qaService;
+    private final DiscussionService discussionService;
 
     @Autowired
-    public DiscussionController(QAService qaService) {
-        this.qaService = qaService;
+    public DiscussionController(DiscussionService discussionService) {
+        this.discussionService = discussionService;
     }
 
     // Question Controller
@@ -28,18 +28,18 @@ public class DiscussionController {
             produces = "application/json")
     ResponseEntity<List<QuestionDto>> getQuestions(@RequestParam(value = "filter", required = false) String filter) {
         if (filter == null) {
-            return new ResponseEntity<>(qaService.getQuestions(), HttpStatus.OK);
+            return new ResponseEntity<>(discussionService.getQuestions(), HttpStatus.OK);
         }
 
         switch (filter) {
             case "unanswered":
-                return new ResponseEntity<>(qaService.getUnansweredQuestions(), HttpStatus.OK);
+                return new ResponseEntity<>(discussionService.getUnansweredQuestions(), HttpStatus.OK);
             case "unsolved":
-                return new ResponseEntity<>(qaService.getUnsolvedQuestions(), HttpStatus.OK);
+                return new ResponseEntity<>(discussionService.getUnsolvedQuestions(), HttpStatus.OK);
             case "answeredbyme":
-                return new ResponseEntity<>(qaService.getByAccountAnsweredQuestions(), HttpStatus.OK);
+                return new ResponseEntity<>(discussionService.getByAccountAnsweredQuestions(), HttpStatus.OK);
             default:
-                return new ResponseEntity<>(qaService.getQuestions(), HttpStatus.OK);
+                return new ResponseEntity<>(discussionService.getQuestions(), HttpStatus.OK);
         }
     }
 }

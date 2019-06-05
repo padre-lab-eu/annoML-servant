@@ -13,9 +13,8 @@ import java.util.Date;
  * Superclass for posts containing a body, an author and a date. The corresponding values for author and date get set
  * by JpaAuditing when persisting.
  */
-@MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
-public abstract class AbstractPost extends AbstractEntity {
+@Entity
+public class AbstractPost extends AbstractEntity {
     @Column(length = 65000)
     private String body;
     @CreatedBy
