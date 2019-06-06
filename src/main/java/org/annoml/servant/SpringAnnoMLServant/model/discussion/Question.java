@@ -56,7 +56,6 @@ public class Question extends AbstractPost {
         this.title = title;
     }
 
-    private Question() { // jpa
-        answers = new ArrayList<>();
+    public Question() { //jpa
     }
 }

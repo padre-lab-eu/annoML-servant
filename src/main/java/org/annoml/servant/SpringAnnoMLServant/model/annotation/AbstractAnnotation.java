@@ -1,9 +1,13 @@
 package org.annoml.servant.SpringAnnoMLServant.model.annotation;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.annoml.servant.SpringAnnoMLServant.model.AbstractEntity;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.AbstractPost;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.AbstractVisualization;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.springframework.data.annotation.CreatedBy;
 
 import javax.persistence.Entity;
@@ -16,8 +20,10 @@ public class AbstractAnnotation extends AbstractEntity {
     @ManyToOne
     private Author author;
     @ManyToOne
+    @JsonBackReference
     private AbstractPost post;
     @ManyToOne
+    @JsonBackReference
     private AbstractVisualization visualization;
 
     public AbstractAnnotation(Author author, AbstractPost post, AbstractVisualization visualization) {
@@ -48,5 +54,8 @@ public class AbstractAnnotation extends AbstractEntity {
 
     public void setVisualization(AbstractVisualization visualization) {
         this.visualization = visualization;
+    }
+
+    public AbstractAnnotation() { //jpa
     }
 }

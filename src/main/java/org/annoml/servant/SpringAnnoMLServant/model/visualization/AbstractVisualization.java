@@ -1,8 +1,12 @@
 package org.annoml.servant.SpringAnnoMLServant.model.visualization;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.annoml.servant.SpringAnnoMLServant.model.AbstractEntity;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.AbstractAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedBy;
 
@@ -15,10 +19,13 @@ import java.util.List;
 public class AbstractVisualization extends AbstractEntity {
     @CreatedBy
     @ManyToOne
+    @JsonBackReference
     private Author author;
     @Length(max = 255)
     private String title;
     @OneToMany(orphanRemoval = true)
+    @Cascade(value = CascadeType.ALL)
+    @JsonManagedReference
     private List<AbstractAnnotation> annotations;
 
     public AbstractVisualization(Author author, @Length(max = 255) String title, List<AbstractAnnotation> annotations) {
@@ -50,6 +57,10 @@ public class AbstractVisualization extends AbstractEntity {
 
     public void setAnnotations(List<AbstractAnnotation> annotations) {
         this.annotations = annotations;
+    }
+
+    public void addAnnotation(AbstractAnnotation annotation) {
+        this.annotations.add(annotation);
     }
 
     public AbstractVisualization() { //jpa

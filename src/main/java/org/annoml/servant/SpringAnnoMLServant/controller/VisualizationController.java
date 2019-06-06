@@ -1,5 +1,6 @@
 package org.annoml.servant.SpringAnnoMLServant.controller;
 
+import org.annoml.servant.SpringAnnoMLServant.dto.VegaAnnotationDto;
 import org.annoml.servant.SpringAnnoMLServant.dto.VegaVisualizationDto;
 import org.annoml.servant.SpringAnnoMLServant.service.VisualizationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -37,5 +39,17 @@ public class VisualizationController {
     )
     ResponseEntity<VegaVisualizationDto> getVisualization(@PathVariable Long id) {
         return new ResponseEntity<>(visualizationService.getVegaVisualization(id), HttpStatus.OK);
+    }
+
+    // Annotation
+
+    @RequestMapping(
+            value = "/visualizations/annotation", // todo add vis {id}
+            method = RequestMethod.POST,
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    ResponseEntity<VegaAnnotationDto> addAnnotation(@Valid @RequestBody VegaAnnotationDto annotationDto) {
+        return new ResponseEntity<>(visualizationService.addAnnotation(annotationDto), HttpStatus.CREATED);
     }
 }

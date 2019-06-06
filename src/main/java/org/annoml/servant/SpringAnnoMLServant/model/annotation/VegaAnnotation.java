@@ -1,61 +1,48 @@
 package org.annoml.servant.SpringAnnoMLServant.model.annotation;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.AbstractPost;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.AbstractVisualization;
+import org.hibernate.annotations.Type;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 
 
 @Entity
 public class VegaAnnotation extends AbstractAnnotation {
-    private String title;
-    private String label;
-    private String xCoordinate;
-    private String yCoordinate;
     private String color;
-    private String subject;
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    @Basic(fetch = FetchType.LAZY)
+    private JsonNode note;
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    @Basic(fetch = FetchType.LAZY)
+    private JsonNode data;
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    @Basic(fetch = FetchType.LAZY)
+    private JsonNode subject;
 
-    public VegaAnnotation(Author author, AbstractPost post, AbstractVisualization visualization, String title, String label, String xCoordinate, String yCoordinate, String color, String subject) {
+
+    public VegaAnnotation(Author author, AbstractPost post, AbstractVisualization visualization, String color, JsonNode note, JsonNode data, JsonNode subject) {
         super(author, post, visualization);
-        this.title = title;
-        this.label = label;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
         this.color = color;
+        this.note = note;
+        this.data = data;
         this.subject = subject;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public String getxCoordinate() {
-        return xCoordinate;
-    }
-
-    public void setxCoordinate(String xCoordinate) {
-        this.xCoordinate = xCoordinate;
-    }
-
-    public String getyCoordinate() {
-        return yCoordinate;
-    }
-
-    public void setyCoordinate(String yCoordinate) {
-        this.yCoordinate = yCoordinate;
+    public VegaAnnotation(String color, JsonNode note, JsonNode data, JsonNode subject) {
+        this.color = color;
+        this.note = note;
+        this.data = data;
+        this.subject = subject;
     }
 
     public String getColor() {
@@ -66,11 +53,31 @@ public class VegaAnnotation extends AbstractAnnotation {
         this.color = color;
     }
 
-    public String getSubject() {
+    public JsonNode getNote() {
+        return note;
+    }
+
+    public void setNote(JsonNode note) {
+        this.note = note;
+    }
+
+    public JsonNode getData() {
+        return data;
+    }
+
+    public void setData(JsonNode data) {
+        this.data = data;
+    }
+
+    public JsonNode getSubject() {
         return subject;
     }
 
-    public void setSubject(String subject) {
+    public void setSubject(JsonNode subject) {
         this.subject = subject;
     }
+
+    public VegaAnnotation() { // JPA
+    }
+
 }

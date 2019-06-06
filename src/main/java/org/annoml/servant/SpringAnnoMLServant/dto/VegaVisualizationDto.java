@@ -44,7 +44,7 @@ public class VegaVisualizationDto {
         return annotations;
     }
 
-    @JsonIgnore
+    @JsonProperty
     public Author getAuthor() {
         return author;
     }
