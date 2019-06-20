@@ -1,19 +1,19 @@
 package org.annoml.servant.SpringAnnoMLServant.controller;
 
+import org.annoml.servant.SpringAnnoMLServant.dto.DiscussionDto;
+import org.annoml.servant.SpringAnnoMLServant.model.discussion.Question;
 import org.annoml.servant.SpringAnnoMLServant.service.DiscussionService;
 import org.annoml.servant.SpringAnnoMLServant.dto.QuestionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/discussion")
+@RequestMapping("/discussions")
 public class DiscussionController {
     private final DiscussionService discussionService;
 
@@ -42,5 +42,26 @@ public class DiscussionController {
                 return new ResponseEntity<>(discussionService.getQuestions(), HttpStatus.OK);
         }
     }
+
+    @RequestMapping(
+            value = "/{id}",
+            method = RequestMethod.GET,
+            produces = "application/json"
+    )
+    ResponseEntity<DiscussionDto> getDiscussion(@PathVariable Long id) {
+        return new ResponseEntity<>(discussionService.getDiscussion(id), HttpStatus.OK);
+    }
+
+    @RequestMapping(
+            value = "/{id}/question", //
+            method = RequestMethod.POST,
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    ResponseEntity<QuestionDto> addQuestion(@Valid @PathVariable Long discussionId, @RequestBody QuestionDto questionDto) {
+        return new ResponseEntity<>(discussionService.addQuestion(discussionId, questionDto), HttpStatus.CREATED);
+    }
+
+
 }
 

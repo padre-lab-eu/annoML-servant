@@ -19,8 +19,8 @@ public class VegaVisualization extends AbstractVisualization {
     @Basic(fetch = FetchType.LAZY)
     private JsonNode schema;
 
-    public VegaVisualization(Author author, @Length(max = 255) String title, List<AbstractAnnotation> annotations, JsonNode schema) {
-        super(author, title, annotations);
+    public VegaVisualization(Author author, @Length(max = 255) String title, JsonNode schema) {
+        super(author, title);
         this.schema = schema;
     }
 

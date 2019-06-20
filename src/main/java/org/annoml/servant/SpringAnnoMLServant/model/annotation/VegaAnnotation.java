@@ -1,20 +1,14 @@
 package org.annoml.servant.SpringAnnoMLServant.model.annotation;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.annoml.servant.SpringAnnoMLServant.model.discussion.AbstractPost;
-import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
-import org.annoml.servant.SpringAnnoMLServant.model.visualization.AbstractVisualization;
+import org.annoml.servant.SpringAnnoMLServant.model.AbstractEntity;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.*;
 
 
 @Entity
-public class VegaAnnotation extends AbstractAnnotation {
+public class VegaAnnotation extends AbstractEntity {
     private String color;
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
@@ -30,13 +24,6 @@ public class VegaAnnotation extends AbstractAnnotation {
     private JsonNode subject;
 
 
-    public VegaAnnotation(Author author, AbstractPost post, AbstractVisualization visualization, String color, JsonNode note, JsonNode data, JsonNode subject) {
-        super(author, post, visualization);
-        this.color = color;
-        this.note = note;
-        this.data = data;
-        this.subject = subject;
-    }
 
     public VegaAnnotation(String color, JsonNode note, JsonNode data, JsonNode subject) {
         this.color = color;

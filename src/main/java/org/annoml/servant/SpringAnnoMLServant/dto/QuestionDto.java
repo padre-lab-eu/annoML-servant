@@ -1,94 +1,39 @@
 package org.annoml.servant.SpringAnnoMLServant.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
+import lombok.Getter;
 import lombok.NonNull;
-import org.annoml.servant.SpringAnnoMLServant.model.discussion.Answer;
-import org.hibernate.validator.constraints.Length;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
-/**
- * DataTransferObject containing information related to the question entity.
- * Ignores id, answers, favorite, author and date when mapping from json to dto.
- */
+@Getter
+@Setter
 public class QuestionDto {
+    @Id
+    @NotNull
     private Long id;
-    @NonNull
-    @Length(max = 255)
+    @NotNull
     private String title;
+    @NotNull
     private List<AnswerDto> answers;
-    private Answer favorite;
-    @NonNull
-    private String body;
+    @NotNull
+    private AnswerDto favorite;
+    @NotNull
+    private JsonNode body;
+    @NotNull
     private AuthorDto author;
+    @NotNull
     private Date date;
+    @NonNull
+    private List<VegaPointAnnotationDto> pointAnnotations;
+    @NotNull
+    private List<VegaRectangleAnnotationDto> rectangleAnnotations;
+    @NonNull
+    private String color;
 
-    @JsonProperty
-    public Long getId() {
-        return id;
-    }
-
-    @JsonIgnore
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    @JsonProperty
-    public List<AnswerDto> getAnswers() {
-        return answers;
-    }
-
-    @JsonIgnore
-    public void setAnswers(List<AnswerDto> answers) {
-        this.answers = answers;
-    }
-
-    @JsonProperty
-    public Answer getFavorite() {
-        return favorite;
-    }
-
-    @JsonIgnore
-    public void setFavorite(Answer favorite) {
-        this.favorite = favorite;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    @JsonProperty
-    public AuthorDto getAuthor() {
-        return author;
-    }
-
-    @JsonIgnore
-    public void setAuthor(AuthorDto author) {
-        this.author = author;
-    }
-
-    @JsonProperty
-    public Date getDate() {
-        return date;
-    }
-
-    @JsonIgnore
-    public void setDate(Date date) {
-        this.date = date;
-    }
 }

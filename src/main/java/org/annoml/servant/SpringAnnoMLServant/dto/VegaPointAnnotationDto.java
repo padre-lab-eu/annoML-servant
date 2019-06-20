@@ -3,21 +3,27 @@ package org.annoml.servant.SpringAnnoMLServant.dto;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
+
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class VegaVisualizationDto {
+public class VegaPointAnnotationDto {
     @Id
     @NotNull
     private Long id;
     @NotNull
-    private AuthorDto author;
+    private VegaVisualizationDto visualization;
     @NotNull
-    private String title;
+    private String type;
     @NotNull
-    private JsonNode schema;
-
+    private String color;
+    @NotNull
+    private JsonNode note;
+    @NotNull
+    private JsonNode data;
+    @NotNull
+    private JsonNode subject;
 }

@@ -1,13 +1,20 @@
 package org.annoml.servant.SpringAnnoMLServant.model.discussion;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.NonNull;
+import org.annoml.servant.SpringAnnoMLServant.model.annotation.AbstractAnnotation;
+import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaAnnotation;
+import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaPointAnnotation;
+import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaRectangleAnnotation;
+import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,12 +31,28 @@ public class Question extends AbstractPost {
     private List<Answer> answers;
     @OneToOne
     private Answer favorite;
+    @Length(max = 7)
+    private String color;
 
-    public Question(String title, String body) {
-        super(body);
-        answers = new ArrayList<>();
+    public Question(JsonNode body, Author author, List<VegaPointAnnotation> pointAnnotations, List<VegaRectangleAnnotation> rectangleAnnotations, @NonNull @Length(max = 255) String title, List<Answer> answers, Answer favorite, @Length(max = 7) String color) {
+        super(body, author, pointAnnotations, rectangleAnnotations);
         this.title = title;
+        this.answers = answers;
+        this.favorite = favorite;
+        this.color = color;
+    }
 
+
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public List<Answer> getAnswers() {

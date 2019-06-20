@@ -1,9 +1,10 @@
 package org.annoml.servant.SpringAnnoMLServant.service;
 
-import org.annoml.servant.SpringAnnoMLServant.dto.VegaAnnotationDto;
+import org.annoml.servant.SpringAnnoMLServant.dto.VegaPointAnnotationDto;
+import org.annoml.servant.SpringAnnoMLServant.dto.VegaRectangleAnnotationDto;
 import org.annoml.servant.SpringAnnoMLServant.dto.VegaVisualizationDto;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.AbstractAnnotation;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaAnnotation;
+import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaPointAnnotation;
+import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaRectangleAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.AbstractVisualization;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.VegaVisualization;
 import org.annoml.servant.SpringAnnoMLServant.repository.AnnotationRepository;
@@ -50,25 +51,14 @@ public class VisualizationService {
 
     // Annotation
 
-    public List<VegaAnnotationDto> getAnnotationsForVegaVisualization(Long id) {
-       List<AbstractAnnotation> annotations = this.annotationRepository.getAbstractAnnotationsByVisualization(id);
-       List<VegaAnnotationDto> annotationDtos = new LinkedList<>();
-       for (AbstractAnnotation a : annotations) {
-           annotationDtos.add(convertToDto((VegaAnnotation) a));
-       }
-       return annotationDtos;
-    }
-
-    public VegaAnnotationDto addAnnotation(VegaAnnotationDto annotationDto) {
-       VegaAnnotation vegaAnnotation = new VegaAnnotation(annotationDto.getAuthor(), annotationDto.getPost(), annotationDto.getVisualization(), annotationDto.getColor(),  annotationDto.getNote(), annotationDto.getData(), annotationDto.getSubject());
-       this.annotationRepository.save(vegaAnnotation);
-       return convertToDto(vegaAnnotation);
-    }
-
     // Annotation Helper
 
-    private VegaAnnotationDto convertToDto(VegaAnnotation vegaAnnotation) {
-       return modelMapper.map(vegaAnnotation, VegaAnnotationDto.class);
+    private VegaPointAnnotationDto convertToDto(VegaPointAnnotation vegaPointAnnotation) {
+       return modelMapper.map(vegaPointAnnotation, VegaPointAnnotationDto.class);
+    }
+
+    private VegaRectangleAnnotationDto convertToDto(VegaRectangleAnnotation vegaRectangleAnnotation) {
+       return modelMapper.map(vegaRectangleAnnotation, VegaRectangleAnnotationDto.class);
     }
 
 }

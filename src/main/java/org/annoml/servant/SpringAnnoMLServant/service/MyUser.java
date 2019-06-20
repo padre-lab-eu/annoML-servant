@@ -12,7 +12,7 @@ public class MyUser extends User {
         this.author = author;
     }
 
-    public Author getAuhtor() {
+    public Author getAuthor() {
         return author;
     }
 }
