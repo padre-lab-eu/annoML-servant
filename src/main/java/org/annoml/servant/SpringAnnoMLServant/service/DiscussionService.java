@@ -1,7 +1,6 @@
 package org.annoml.servant.SpringAnnoMLServant.service;
 
 import org.annoml.servant.SpringAnnoMLServant.dto.*;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaPointAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaRectangleAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Answer;
@@ -9,6 +8,7 @@ import org.annoml.servant.SpringAnnoMLServant.model.discussion.Discussion;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Question;
 import org.annoml.servant.SpringAnnoMLServant.repository.AnswerRepository;
+import org.annoml.servant.SpringAnnoMLServant.repository.AuthorRepository;
 import org.annoml.servant.SpringAnnoMLServant.repository.DiscussionRepository;
 import org.annoml.servant.SpringAnnoMLServant.repository.QuestionRepository;
 import org.modelmapper.ModelMapper;
@@ -27,13 +27,15 @@ public class DiscussionService {
     private final DiscussionRepository discussionRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
+    private final AuthorRepository authorRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public DiscussionService(DiscussionRepository discussionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, ModelMapper modelMapper) {
+    public DiscussionService(DiscussionRepository discussionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, ModelMapper modelMapper, AuthorRepository authorRepository) {
         this.discussionRepository = discussionRepository;
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
+        this.authorRepository = authorRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -137,7 +139,8 @@ public class DiscussionService {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new AccessDeniedException("no user?!");
         }
-        Author author = ((MyUser) authentication.getPrincipal()).getAuthor();
+        // Author author = ((MyUser) authentication.getPrincipal()).getAuthor();
+        Author author = authorRepository.findByUsername("user1");
         if (author == null) {
             throw new AccessDeniedException("no user?!");
         }

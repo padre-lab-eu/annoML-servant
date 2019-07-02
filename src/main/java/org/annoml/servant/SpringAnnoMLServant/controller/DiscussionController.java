@@ -58,8 +58,8 @@ public class DiscussionController {
             consumes = "application/json",
             produces = "application/json"
     )
-    ResponseEntity<QuestionDto> addQuestion(@Valid @PathVariable Long discussionId, @RequestBody QuestionDto questionDto) {
-        return new ResponseEntity<>(discussionService.addQuestion(discussionId, questionDto), HttpStatus.CREATED);
+    ResponseEntity<QuestionDto> addQuestion(@PathVariable Long id, @RequestBody QuestionDto questionDto) {
+        return new ResponseEntity<>(discussionService.addQuestion(id, questionDto), HttpStatus.CREATED);
     }
 
 

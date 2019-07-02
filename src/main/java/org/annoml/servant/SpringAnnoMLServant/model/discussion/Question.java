@@ -3,8 +3,6 @@ package org.annoml.servant.SpringAnnoMLServant.model.discussion;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.NonNull;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.AbstractAnnotation;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaPointAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaRectangleAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
@@ -13,8 +11,6 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
