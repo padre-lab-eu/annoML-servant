@@ -62,6 +62,27 @@ public class DiscussionController {
         return new ResponseEntity<>(discussionService.addQuestion(id, questionDto), HttpStatus.CREATED);
     }
 
+    @RequestMapping(
+            value = "/{id}/questions/{questionId}", //
+            method = RequestMethod.PUT,
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    ResponseEntity<QuestionDto> updateQuestion(@PathVariable Long id, @PathVariable Long questionId, @RequestBody QuestionDto questionDto) {
+        return new ResponseEntity<>(discussionService.updateQuestion(id, questionId, questionDto), HttpStatus.CREATED);
+    }
+
+    @RequestMapping(
+            value = "/{id}/questions/{questionId}", //
+            method = RequestMethod.DELETE,
+            produces = "application/json"
+    )
+    ResponseEntity<QuestionDto> deleteQuestion(@PathVariable Long id, @PathVariable Long questionId) {
+        return new ResponseEntity<>(discussionService.deleteQuestion(id, questionId), HttpStatus.OK);
+    }
+
+
+
 
 }
 

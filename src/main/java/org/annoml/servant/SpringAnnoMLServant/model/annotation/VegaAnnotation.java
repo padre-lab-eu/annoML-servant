@@ -9,6 +9,7 @@ import javax.persistence.*;
 
 @Entity
 public class VegaAnnotation extends AbstractEntity {
+    private String annotationType;
     private String color;
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
@@ -25,11 +26,20 @@ public class VegaAnnotation extends AbstractEntity {
 
 
 
-    public VegaAnnotation(String color, JsonNode note, JsonNode data, JsonNode subject) {
+    public VegaAnnotation(String annotationType, String color, JsonNode note, JsonNode data, JsonNode subject) {
+        this.annotationType = annotationType;
         this.color = color;
         this.note = note;
         this.data = data;
         this.subject = subject;
+    }
+
+    public String getAnnotationType() {
+        return annotationType;
+    }
+
+    public void setAnnotationType(String annotationType) {
+        this.annotationType = annotationType;
     }
 
     public String getColor() {

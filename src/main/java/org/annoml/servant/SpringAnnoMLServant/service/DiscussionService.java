@@ -65,8 +65,33 @@ public class DiscussionService {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
         Question question = new Question(questionDto.getBody(), getCurrentAuthor(),vegaPointAnnotations, vegaRectangleAnnotations, questionDto.getTitle(), new LinkedList<>(), null, questionDto.getColor());
-        this.questionRepository.saveAndFlush(question);
+        this.questionRepository.save(question);
         discussion.addQuestion(question);
+        return convertToDto(question);
+    }
+
+    public QuestionDto updateQuestion(Long id, Long questionId, QuestionDto questionDto) {
+        Question question = this.questionRepository.findById(questionId).get();
+        List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
+        for (VegaPointAnnotationDto d : questionDto.getPointAnnotations()) {
+            vegaPointAnnotations.add(convertToEntity(d));
+        }
+        List<VegaRectangleAnnotation> vegaRectangleAnnotations = new LinkedList<>();
+        for (VegaRectangleAnnotationDto d : questionDto.getRectangleAnnotations()) {
+            vegaRectangleAnnotations.add(convertToEntity(d));
+        }
+        question.setBody(questionDto.getBody());
+        question.setPointAnnotations(vegaPointAnnotations);
+        question.setRectangleAnnotations(vegaRectangleAnnotations);
+        question.setTitle(questionDto.getTitle());
+        question.setColor(questionDto.getColor());
+        this.questionRepository.saveAndFlush(question);
+        return convertToDto(question);
+    }
+
+    public QuestionDto deleteQuestion(Long id, Long questionId) {
+        Question question = this.questionRepository.findById(questionId).get();
+        this.questionRepository.delete(question);
         return convertToDto(question);
     }
 

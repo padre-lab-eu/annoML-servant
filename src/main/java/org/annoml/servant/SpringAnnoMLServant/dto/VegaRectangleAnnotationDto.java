@@ -16,7 +16,7 @@ public class VegaRectangleAnnotationDto {
     @NotNull
     private VegaVisualizationDto visualization;
     @NotNull
-    private String type;
+    private String annotationType;
     @NotNull
     private String color;
     @NotNull
