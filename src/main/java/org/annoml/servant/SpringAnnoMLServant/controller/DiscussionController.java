@@ -64,7 +64,7 @@ public class DiscussionController {
 
     @RequestMapping(
             value = "/{id}/questions/{questionId}", //
-            method = RequestMethod.PUT,
+            method = RequestMethod.POST,
             consumes = "application/json",
             produces = "application/json"
     )

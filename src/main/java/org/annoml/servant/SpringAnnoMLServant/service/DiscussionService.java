@@ -1,16 +1,14 @@
 package org.annoml.servant.SpringAnnoMLServant.service;
 
 import org.annoml.servant.SpringAnnoMLServant.dto.*;
+import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaPointAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaRectangleAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Answer;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Discussion;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Question;
-import org.annoml.servant.SpringAnnoMLServant.repository.AnswerRepository;
-import org.annoml.servant.SpringAnnoMLServant.repository.AuthorRepository;
-import org.annoml.servant.SpringAnnoMLServant.repository.DiscussionRepository;
-import org.annoml.servant.SpringAnnoMLServant.repository.QuestionRepository;
+import org.annoml.servant.SpringAnnoMLServant.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -28,14 +26,16 @@ public class DiscussionService {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final AuthorRepository authorRepository;
+    private final AnnotationRepository annotationRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public DiscussionService(DiscussionRepository discussionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, ModelMapper modelMapper, AuthorRepository authorRepository) {
+    public DiscussionService(DiscussionRepository discussionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, ModelMapper modelMapper, AuthorRepository authorRepository, AnnotationRepository annotationRepository) {
         this.discussionRepository = discussionRepository;
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
         this.authorRepository = authorRepository;
+        this.annotationRepository = annotationRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -72,17 +72,31 @@ public class DiscussionService {
 
     public QuestionDto updateQuestion(Long id, Long questionId, QuestionDto questionDto) {
         Question question = this.questionRepository.findById(questionId).get();
-        List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
+        List<VegaPointAnnotation> vegaPointAnnotations = question.getPointAnnotations();
         for (VegaPointAnnotationDto d : questionDto.getPointAnnotations()) {
-            vegaPointAnnotations.add(convertToEntity(d));
+            if (this.annotationRepository.findById(d.getId()).isPresent()) {
+                VegaPointAnnotation annotation = (VegaPointAnnotation) this.annotationRepository.findById(d.getId()).get();
+                annotation.setColor(d.getColor());
+                annotation.setData(d.getData());
+                annotation.setNote(d.getNote());
+                annotation.setSubject(d.getSubject());
+            } else {
+                vegaPointAnnotations.add(convertToEntity(d));
+            }
         }
-        List<VegaRectangleAnnotation> vegaRectangleAnnotations = new LinkedList<>();
+        List<VegaRectangleAnnotation> vegaRectangleAnnotations = question.getRectangleAnnotations();
         for (VegaRectangleAnnotationDto d : questionDto.getRectangleAnnotations()) {
-            vegaRectangleAnnotations.add(convertToEntity(d));
+            if (this.annotationRepository.findById(d.getId()).isPresent()) {
+                VegaRectangleAnnotation annotation = (VegaRectangleAnnotation) this.annotationRepository.findById(d.getId()).get();
+                annotation.setColor(d.getColor());
+                annotation.setData(d.getData());
+                annotation.setNote(d.getNote());
+                annotation.setSubject(d.getSubject());
+            } else {
+                vegaRectangleAnnotations.add(convertToEntity(d));
+            }
         }
         question.setBody(questionDto.getBody());
-        question.setPointAnnotations(vegaPointAnnotations);
-        question.setRectangleAnnotations(vegaRectangleAnnotations);
         question.setTitle(questionDto.getTitle());
         question.setColor(questionDto.getColor());
         this.questionRepository.saveAndFlush(question);

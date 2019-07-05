@@ -1,7 +1,6 @@
 package org.annoml.servant.SpringAnnoMLServant.model.visualization;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.AbstractAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
@@ -10,7 +9,6 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import java.util.List;
 
 @Entity
 public class VegaVisualization extends AbstractVisualization {

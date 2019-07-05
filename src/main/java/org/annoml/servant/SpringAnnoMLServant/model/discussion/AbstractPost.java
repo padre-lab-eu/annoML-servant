@@ -86,6 +86,7 @@ public class AbstractPost extends AbstractEntity {
         return rectangleAnnotations;
     }
 
+
     public void setRectangleAnnotations(List<VegaRectangleAnnotation> rectangleAnnotations) {
         this.rectangleAnnotations = rectangleAnnotations;
     }
