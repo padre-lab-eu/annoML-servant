@@ -70,7 +70,7 @@ public class DiscussionService {
         return convertToDto(question);
     }
 
-    public QuestionDto updateQuestion(Long id, Long questionId, QuestionDto questionDto) {
+    public QuestionDto updateQuestion(Long questionId, QuestionDto questionDto) {
         Question question = this.questionRepository.findById(questionId).get();
         List<VegaPointAnnotation> vegaPointAnnotations = question.getPointAnnotations();
         for (VegaPointAnnotationDto d : questionDto.getPointAnnotations()) {
@@ -103,10 +103,26 @@ public class DiscussionService {
         return convertToDto(question);
     }
 
-    public QuestionDto deleteQuestion(Long id, Long questionId) {
+    public QuestionDto deleteQuestion(Long questionId) {
         Question question = this.questionRepository.findById(questionId).get();
         this.questionRepository.delete(question);
         return convertToDto(question);
+    }
+
+    public AnswerDto addAnswer(Long questionId, AnswerDto answerDto) {
+        Question question = this.questionRepository.findById(questionId).get();
+        List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
+        for (VegaPointAnnotationDto d : answerDto.getPointAnnotations()) {
+            vegaPointAnnotations.add(convertToEntity(d));
+        }
+        List<VegaRectangleAnnotation> vegaRectangleAnnotations = new LinkedList<>();
+        for (VegaRectangleAnnotationDto d : answerDto.getRectangleAnnotations()) {
+            vegaRectangleAnnotations.add(convertToEntity(d));
+        }
+        Answer answer = new Answer(answerDto.getBody(), getCurrentAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, new LinkedList<>(), answerDto.getColor());
+        this.answerRepository.save(answer);
+        question.addAnswer(answer);
+        return convertToDto(answer);
     }
 
     public List<QuestionDto> getQuestions() {
@@ -149,6 +165,7 @@ public class DiscussionService {
     private QuestionDto convertToDto(Question question) {
         return modelMapper.map(question, QuestionDto.class);
     }
+
 
     private DiscussionDto convertToDto(Discussion discussion) { return modelMapper.map(discussion, DiscussionDto.class);
     }

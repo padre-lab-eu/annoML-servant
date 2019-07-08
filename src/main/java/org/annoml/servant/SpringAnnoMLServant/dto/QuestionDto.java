@@ -33,6 +33,7 @@ public class QuestionDto {
     private List<VegaPointAnnotationDto> pointAnnotations;
     @NotNull
     private List<VegaRectangleAnnotationDto> rectangleAnnotations;
+    @NonNull
     private String color;
 
 }

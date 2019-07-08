@@ -1,5 +1,6 @@
 package org.annoml.servant.SpringAnnoMLServant.controller;
 
+import org.annoml.servant.SpringAnnoMLServant.dto.AnswerDto;
 import org.annoml.servant.SpringAnnoMLServant.dto.DiscussionDto;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Question;
 import org.annoml.servant.SpringAnnoMLServant.service.DiscussionService;
@@ -63,24 +64,33 @@ public class DiscussionController {
     }
 
     @RequestMapping(
-            value = "/{id}/questions/{questionId}", //
+            value = "/questions/{questionId}", //
             method = RequestMethod.POST,
             consumes = "application/json",
             produces = "application/json"
     )
-    ResponseEntity<QuestionDto> updateQuestion(@PathVariable Long id, @PathVariable Long questionId, @RequestBody QuestionDto questionDto) {
-        return new ResponseEntity<>(discussionService.updateQuestion(id, questionId, questionDto), HttpStatus.CREATED);
+    ResponseEntity<QuestionDto> updateQuestion(@PathVariable Long questionId, @RequestBody QuestionDto questionDto) {
+        return new ResponseEntity<>(discussionService.updateQuestion(questionId, questionDto), HttpStatus.CREATED);
     }
 
     @RequestMapping(
-            value = "/{id}/questions/{questionId}", //
+            value = "/questions/{questionId}", //
             method = RequestMethod.DELETE,
             produces = "application/json"
     )
-    ResponseEntity<QuestionDto> deleteQuestion(@PathVariable Long id, @PathVariable Long questionId) {
-        return new ResponseEntity<>(discussionService.deleteQuestion(id, questionId), HttpStatus.OK);
+    ResponseEntity<QuestionDto> deleteQuestion(@PathVariable Long questionId) {
+        return new ResponseEntity<>(discussionService.deleteQuestion(questionId), HttpStatus.OK);
     }
 
+    @RequestMapping(
+            value = "/questions/{questionId}/answer", //
+            method = RequestMethod.POST,
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    ResponseEntity<AnswerDto> addAnswer(@PathVariable Long questionId, @RequestBody AnswerDto answerDto) {
+        return new ResponseEntity<>(discussionService.addAnswer(questionId, answerDto), HttpStatus.CREATED);
+    }
 
 
 
