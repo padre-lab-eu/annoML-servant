@@ -92,6 +92,25 @@ public class DiscussionController {
         return new ResponseEntity<>(discussionService.addAnswer(questionId, answerDto), HttpStatus.CREATED);
     }
 
+    @RequestMapping(
+            value = "/answers/{answerId}", //
+            method = RequestMethod.POST,
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    ResponseEntity<AnswerDto> updateAnswer(@PathVariable Long answerId, @RequestBody AnswerDto answerDto) {
+        return new ResponseEntity<>(discussionService.updateAnswer(answerId, answerDto), HttpStatus.CREATED);
+    }
+
+    @RequestMapping(
+            value = "/answers/{answerId}", //
+            method = RequestMethod.DELETE,
+            produces = "application/json"
+    )
+    ResponseEntity<AnswerDto> deleteAnswer(@PathVariable Long answerId) {
+        return new ResponseEntity<>(discussionService.deleteAnswer(answerId), HttpStatus.OK);
+    }
+
 
 
 }

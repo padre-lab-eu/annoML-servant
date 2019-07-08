@@ -125,6 +125,44 @@ public class DiscussionService {
         return convertToDto(answer);
     }
 
+    public AnswerDto updateAnswer(Long anserId, AnswerDto answerDto) {
+        Answer answer = this.answerRepository.findById(anserId).get();
+        List<VegaPointAnnotation> vegaPointAnnotations = answer.getPointAnnotations();
+        for (VegaPointAnnotationDto d : answerDto.getPointAnnotations()) {
+            if (this.annotationRepository.findById(d.getId()).isPresent()) {
+                VegaPointAnnotation annotation = (VegaPointAnnotation) this.annotationRepository.findById(d.getId()).get();
+                annotation.setColor(d.getColor());
+                annotation.setData(d.getData());
+                annotation.setNote(d.getNote());
+                annotation.setSubject(d.getSubject());
+            } else {
+                vegaPointAnnotations.add(convertToEntity(d));
+            }
+        }
+        List<VegaRectangleAnnotation> vegaRectangleAnnotations = answer.getRectangleAnnotations();
+        for (VegaRectangleAnnotationDto d : answerDto.getRectangleAnnotations()) {
+            if (this.annotationRepository.findById(d.getId()).isPresent()) {
+                VegaRectangleAnnotation annotation = (VegaRectangleAnnotation) this.annotationRepository.findById(d.getId()).get();
+                annotation.setColor(d.getColor());
+                annotation.setData(d.getData());
+                annotation.setNote(d.getNote());
+                annotation.setSubject(d.getSubject());
+            } else {
+                vegaRectangleAnnotations.add(convertToEntity(d));
+            }
+        }
+        answer.setBody(answerDto.getBody());
+        answer.setColor(answer.getColor());
+        this.answerRepository.saveAndFlush(answer);
+        return convertToDto(answer);
+    }
+
+    public AnswerDto deleteAnswer(Long answerId) {
+        Answer answer = this.answerRepository.findById(answerId).get();
+        this.answerRepository.delete(answer);
+        return convertToDto(answer);
+    }
+
     public List<QuestionDto> getQuestions() {
         List<Question> questions = this.questionRepository.findAll();
         List<QuestionDto> questionDtos = new LinkedList<>();
