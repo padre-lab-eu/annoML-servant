@@ -1,6 +1,7 @@
 package org.annoml.servant.SpringAnnoMLServant.controller;
 
 import org.annoml.servant.SpringAnnoMLServant.dto.AnswerDto;
+import org.annoml.servant.SpringAnnoMLServant.dto.CommentDto;
 import org.annoml.servant.SpringAnnoMLServant.dto.DiscussionDto;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Question;
 import org.annoml.servant.SpringAnnoMLServant.service.DiscussionService;
@@ -111,6 +112,34 @@ public class DiscussionController {
         return new ResponseEntity<>(discussionService.deleteAnswer(answerId), HttpStatus.OK);
     }
 
+    @RequestMapping(
+            value = "/answers/{answerId}/comment", //
+            method = RequestMethod.POST,
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    ResponseEntity<CommentDto> addAnswer(@PathVariable Long answerId, @RequestBody CommentDto commentDto) {
+        return new ResponseEntity<>(discussionService.addComment(answerId, commentDto), HttpStatus.CREATED);
+    }
+
+    @RequestMapping(
+            value = "/comments/{commentId}", //
+            method = RequestMethod.POST,
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    ResponseEntity<CommentDto> updateComment(@PathVariable Long commentId, @RequestBody CommentDto commentDto) {
+        return new ResponseEntity<>(discussionService.updateComment(commentId, commentDto), HttpStatus.CREATED);
+    }
+
+    @RequestMapping(
+            value = "/comments/{commentId}", //
+            method = RequestMethod.DELETE,
+            produces = "application/json"
+    )
+    ResponseEntity<CommentDto> deleteComment(@PathVariable Long commentId) {
+        return new ResponseEntity<>(discussionService.deleteComment(commentId), HttpStatus.OK);
+    }
 
 
 }

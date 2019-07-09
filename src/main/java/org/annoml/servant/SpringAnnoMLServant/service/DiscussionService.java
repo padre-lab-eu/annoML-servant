@@ -1,10 +1,10 @@
 package org.annoml.servant.SpringAnnoMLServant.service;
 
 import org.annoml.servant.SpringAnnoMLServant.dto.*;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaPointAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaRectangleAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Answer;
+import org.annoml.servant.SpringAnnoMLServant.model.discussion.Comment;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Discussion;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Question;
@@ -25,15 +25,17 @@ public class DiscussionService {
     private final DiscussionRepository discussionRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
+    private final CommentRepository commentRepository;
     private final AuthorRepository authorRepository;
     private final AnnotationRepository annotationRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public DiscussionService(DiscussionRepository discussionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, ModelMapper modelMapper, AuthorRepository authorRepository, AnnotationRepository annotationRepository) {
+    public DiscussionService(DiscussionRepository discussionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, CommentRepository commentRepository, ModelMapper modelMapper, AuthorRepository authorRepository, AnnotationRepository annotationRepository) {
         this.discussionRepository = discussionRepository;
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
+        this.commentRepository = commentRepository;
         this.authorRepository = authorRepository;
         this.annotationRepository = annotationRepository;
         this.modelMapper = modelMapper;
@@ -125,8 +127,8 @@ public class DiscussionService {
         return convertToDto(answer);
     }
 
-    public AnswerDto updateAnswer(Long anserId, AnswerDto answerDto) {
-        Answer answer = this.answerRepository.findById(anserId).get();
+    public AnswerDto updateAnswer(Long answerId, AnswerDto answerDto) {
+        Answer answer = this.answerRepository.findById(answerId).get();
         List<VegaPointAnnotation> vegaPointAnnotations = answer.getPointAnnotations();
         for (VegaPointAnnotationDto d : answerDto.getPointAnnotations()) {
             if (this.annotationRepository.findById(d.getId()).isPresent()) {
@@ -161,6 +163,60 @@ public class DiscussionService {
         Answer answer = this.answerRepository.findById(answerId).get();
         this.answerRepository.delete(answer);
         return convertToDto(answer);
+    }
+
+    public CommentDto addComment(Long answerId, CommentDto commentDto) {
+        Answer answer = this.answerRepository.findById(answerId).get();
+        List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
+        for (VegaPointAnnotationDto d : commentDto.getPointAnnotations()) {
+            vegaPointAnnotations.add(convertToEntity(d));
+        }
+        List<VegaRectangleAnnotation> vegaRectangleAnnotations = new LinkedList<>();
+        for (VegaRectangleAnnotationDto d : commentDto.getRectangleAnnotations()) {
+            vegaRectangleAnnotations.add(convertToEntity(d));
+        }
+        Comment comment = new Comment(commentDto.getBody(), getCurrentAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, commentDto.getColor());
+        this.commentRepository.save(comment);
+        answer.addComment(comment);
+        return convertToDto(comment);
+    }
+
+    public CommentDto updateComment(Long answerId, CommentDto commentDto) {
+        Comment comment = this.commentRepository.findById(answerId).get();
+        List<VegaPointAnnotation> vegaPointAnnotations = comment.getPointAnnotations();
+        for (VegaPointAnnotationDto d : commentDto.getPointAnnotations()) {
+            if (this.annotationRepository.findById(d.getId()).isPresent()) {
+                VegaPointAnnotation annotation = (VegaPointAnnotation) this.annotationRepository.findById(d.getId()).get();
+                annotation.setColor(d.getColor());
+                annotation.setData(d.getData());
+                annotation.setNote(d.getNote());
+                annotation.setSubject(d.getSubject());
+            } else {
+                vegaPointAnnotations.add(convertToEntity(d));
+            }
+        }
+        List<VegaRectangleAnnotation> vegaRectangleAnnotations = comment.getRectangleAnnotations();
+        for (VegaRectangleAnnotationDto d : commentDto.getRectangleAnnotations()) {
+            if (this.annotationRepository.findById(d.getId()).isPresent()) {
+                VegaRectangleAnnotation annotation = (VegaRectangleAnnotation) this.annotationRepository.findById(d.getId()).get();
+                annotation.setColor(d.getColor());
+                annotation.setData(d.getData());
+                annotation.setNote(d.getNote());
+                annotation.setSubject(d.getSubject());
+            } else {
+                vegaRectangleAnnotations.add(convertToEntity(d));
+            }
+        }
+        comment.setBody(commentDto.getBody());
+        comment.setColor(comment.getColor());
+        this.commentRepository.saveAndFlush(comment);
+        return convertToDto(comment);
+    }
+
+    public CommentDto deleteComment(Long commentId) {
+        Comment comment = this.commentRepository.findById(commentId).get();
+        this.commentRepository.delete(comment);
+        return convertToDto(comment);
     }
 
     public List<QuestionDto> getQuestions() {
@@ -226,6 +282,10 @@ public class DiscussionService {
 
     private AnswerDto convertToDto(Answer answer) {
         return modelMapper.map(answer, AnswerDto.class);
+    }
+
+    private CommentDto convertToDto(Comment comment) {
+        return modelMapper.map(comment, CommentDto.class);
     }
 
     private Author getCurrentAuthor() {

@@ -18,22 +18,26 @@ import java.util.List;
 @Entity
 public class Answer extends AbstractPost {
     @OneToMany(orphanRemoval = true)
-    private List<Answer> answers;
+    private List<Comment> comments;
     @Length(max = 7)
     private String color;
 
-    public Answer(JsonNode body, Author author, List<VegaPointAnnotation> pointAnnotations, List<VegaRectangleAnnotation> rectangleAnnotations, List<Answer> answers, String color) {
+    public Answer(JsonNode body, Author author, List<VegaPointAnnotation> pointAnnotations, List<VegaRectangleAnnotation> rectangleAnnotations, List<Comment> comments, String color) {
         super(body, author, pointAnnotations, rectangleAnnotations);
-        this.answers = answers;
+        this.comments = comments;
         this.color = color;
     }
 
-    public List<Answer> getAnswers() {
-        return answers;
+    public List<Comment> getComments() {
+        return comments;
     }
 
-    public void setAnswers(List<Answer> answers) {
-        this.answers = answers;
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
     }
 
     public String getColor() {

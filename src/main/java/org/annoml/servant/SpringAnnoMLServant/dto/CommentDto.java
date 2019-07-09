@@ -12,12 +12,10 @@ import java.util.List;
 
 @Getter
 @Setter
-public class AnswerDto {
+public class CommentDto {
     @Id
     @NotNull
     private Long id;
-    @NotNull
-    private List<CommentDto> comments;
     @NotNull
     private AuthorDto author;
     @NotNull

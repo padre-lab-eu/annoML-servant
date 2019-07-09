@@ -64,43 +64,41 @@ public class DBInitializer implements ApplicationRunner {
         String autofill = environment.getProperty("autofillAtStartup");
         if (autofill != null && autofill.equals("true")) {
 
-            for (int i = 0; i < INITIAL_USERS; i++) {
-                Author account = new Author("user" + i, "pw");
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode vegaSchema = mapper.readTree(visualizations[0]);
-                JsonNode annotationProperties = mapper.readTree(annotations[0]);
-                VegaVisualization visualization = new VegaVisualization(account, "Example Vega-Lite Visualization #" + i+1, vegaSchema);
-                List<VegaPointAnnotation> annotationsList = new LinkedList<>();
-                List<Question> questionList = new LinkedList<>();
-                VegaPointAnnotation annotation = new VegaPointAnnotation("c0382b", annotationProperties.get("note"), annotationProperties.get("data"), annotationProperties.get("subject"));
-                annotationsList.add(annotation);
-                Question question = new Question(mapper.readTree("{\n" +
-                        "  \"type\": \"doc\",\n" +
-                        "  \"content\": [\n" +
-                        "    {\n" +
-                        "      \"type\": \"paragraph\",\n" +
-                        "      \"content\": [\n" +
-                        "        {\n" +
-                        "          \"type\": \"text\",\n" +
-                        "          \"text\": \"This is some inserted text. \uD83D\uDC4B\"\n" +
-                        "        }\n" +
-                        "      ]\n" +
-                        "    }\n" +
-                        "  ]\n" +
-                        "}"), account, annotationsList, new LinkedList<>(), "Test title", new LinkedList<>(), null, annotation.getColor());
-                //questionList.add(question);
-                this.accountRepository.saveAndFlush(account);
-                this.visualizationRepository.saveAndFlush(visualization);
-                Discussion discussion = new Discussion(account, "Test Discussion", questionList, visualization);
+            Author account = new Author("user1", "pw");
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode vegaSchema = mapper.readTree(visualizations[0]);
+            JsonNode annotationProperties = mapper.readTree(annotations[0]);
+            VegaVisualization visualization = new VegaVisualization(account, "Example Vega-Lite Visualization #1", vegaSchema);
+            List<VegaPointAnnotation> annotationsList = new LinkedList<>();
+            List<Question> questionList = new LinkedList<>();
+            VegaPointAnnotation annotation = new VegaPointAnnotation("c0382b", annotationProperties.get("note"), annotationProperties.get("data"), annotationProperties.get("subject"));
+            annotationsList.add(annotation);
+            Question question = new Question(mapper.readTree("{\n" +
+                    "  \"type\": \"doc\",\n" +
+                    "  \"content\": [\n" +
+                    "    {\n" +
+                    "      \"type\": \"paragraph\",\n" +
+                    "      \"content\": [\n" +
+                    "        {\n" +
+                    "          \"type\": \"text\",\n" +
+                    "          \"text\": \"This is some inserted text. \uD83D\uDC4B\"\n" +
+                    "        }\n" +
+                    "      ]\n" +
+                    "    }\n" +
+                    "  ]\n" +
+                    "}"), account, annotationsList, new LinkedList<>(), "Test title", new LinkedList<>(), null, annotation.getColor());
+            //questionList.add(question);
+            this.accountRepository.saveAndFlush(account);
+            this.visualizationRepository.saveAndFlush(visualization);
+            Discussion discussion = new Discussion(account, "Test Discussion", questionList, visualization);
+
+
+            this.questionRepository.saveAndFlush(question);
+
+            this.discussionRepository.saveAndFlush(discussion);
 
 
 
-                this.questionRepository.saveAndFlush(question);
-
-                this.discussionRepository.saveAndFlush(discussion);
-
-
-            }
 /*
             for (int i = 0; i < INITIAL_QUESTIONS; i++) {
                 Question question = new Question("questiontitle " + i, questions[i % questions.length]);

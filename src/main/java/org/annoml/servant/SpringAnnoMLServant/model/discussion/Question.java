@@ -67,6 +67,7 @@ public class Question extends AbstractPost {
         this.answers.add(answer);
     }
 
+
     public void setFavorite(Answer favorite) {
         this.favorite = favorite;
     }
