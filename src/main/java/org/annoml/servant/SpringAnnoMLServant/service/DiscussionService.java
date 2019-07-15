@@ -6,13 +6,12 @@ import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaRectangleAnno
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Answer;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Comment;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Discussion;
-import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Question;
+import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.annoml.servant.SpringAnnoMLServant.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -66,7 +65,7 @@ public class DiscussionService {
         for (VegaRectangleAnnotationDto d : questionDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
-        Question question = new Question(questionDto.getBody(), getCurrentAuthor(),vegaPointAnnotations, vegaRectangleAnnotations, questionDto.getTitle(), new LinkedList<>(), null, questionDto.getColor());
+        Question question = new Question(questionDto.getBody(), getCurrentAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, questionDto.getTitle(), new LinkedList<>(), null, questionDto.getColor());
         this.questionRepository.save(question);
         discussion.addQuestion(question);
         return convertToDto(question);
@@ -219,49 +218,13 @@ public class DiscussionService {
         return convertToDto(comment);
     }
 
-    public List<QuestionDto> getQuestions() {
-        List<Question> questions = this.questionRepository.findAll();
-        List<QuestionDto> questionDtos = new LinkedList<>();
-        for (Question q : questions) {
-            questionDtos.add(convertToDto(q));
-        }
-        return questionDtos;
-    }
-
-    public List<QuestionDto> getUnsolvedQuestions() {
-        List<Question> questions = this.questionRepository.listAllUnsolved();
-        List<QuestionDto> questionDtos = new LinkedList<>();
-        for (Question q : questions) {
-            questionDtos.add(convertToDto(q));
-        }
-        return questionDtos;
-    }
-
-    public List<QuestionDto> getUnansweredQuestions() {
-        List<Question> questions = this.questionRepository.listAllUnanswered();
-        List<QuestionDto> questionDtos = new LinkedList<>();
-        for (Question q : questions) {
-            questionDtos.add(convertToDto(q));
-        }
-        return questionDtos;
-    }
-
-    @PreAuthorize("hasAuthority(\"USER\")")
-    public List<QuestionDto> getByAccountAnsweredQuestions() {
-        List<Question> questions = this.questionRepository.listAllAnsweredByUser(getCurrentAuthor().getId());
-        List<QuestionDto> questionDtos = new LinkedList<>();
-        for (Question q : questions) {
-            questionDtos.add(convertToDto(q));
-        }
-        return questionDtos;
-    }
-
     private QuestionDto convertToDto(Question question) {
         return modelMapper.map(question, QuestionDto.class);
     }
 
 
-    private DiscussionDto convertToDto(Discussion discussion) { return modelMapper.map(discussion, DiscussionDto.class);
+    private DiscussionDto convertToDto(Discussion discussion) {
+        return modelMapper.map(discussion, DiscussionDto.class);
     }
 
     private Question convertToEntity(QuestionDto questionDto) {

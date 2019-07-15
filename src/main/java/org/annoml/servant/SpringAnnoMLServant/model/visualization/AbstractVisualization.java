@@ -7,7 +7,9 @@ import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedBy;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,6 +30,9 @@ public class AbstractVisualization extends AbstractEntity {
         this.questions = new LinkedList<>();
     }
 
+
+    public AbstractVisualization() { //jpa
+    }
 
     public Author getAuthor() {
         return author;
@@ -51,8 +56,5 @@ public class AbstractVisualization extends AbstractEntity {
 
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
-    }
-
-    public AbstractVisualization() { //jpa
     }
 }

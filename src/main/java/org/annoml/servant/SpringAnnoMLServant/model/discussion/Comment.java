@@ -23,15 +23,15 @@ public class Comment extends AbstractPost {
         this.color = color;
     }
 
+    public Comment() { // jpa
+
+    }
+
     public String getColor() {
         return color;
     }
 
     public void setColor(String color) {
         this.color = color;
-    }
-
-    public Comment() { // jpa
-
     }
 }

@@ -39,8 +39,7 @@ public class Question extends AbstractPost {
     }
 
 
-    public void setAnswers(List<Answer> answers) {
-        this.answers = answers;
+    public Question() { //jpa
     }
 
     public String getColor() {
@@ -55,27 +54,27 @@ public class Question extends AbstractPost {
         return answers;
     }
 
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
+    }
+
     public Answer getFavorite() {
         return favorite;
+    }
+
+    public void setFavorite(Answer favorite) {
+        this.favorite = favorite;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void addAnswer(Answer answer) {
-        this.answers.add(answer);
-    }
-
-
-    public void setFavorite(Answer favorite) {
-        this.favorite = favorite;
-    }
-
     public void setTitle(String title) {
         this.title = title;
     }
 
-    public Question() { //jpa
+    public void addAnswer(Answer answer) {
+        this.answers.add(answer);
     }
 }

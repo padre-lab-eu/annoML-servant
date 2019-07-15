@@ -22,14 +22,14 @@ public class VegaVisualization extends AbstractVisualization {
         this.schema = schema;
     }
 
+    public VegaVisualization() { //jpa
+    }
+
     public JsonNode getSchema() {
         return schema;
     }
 
     public void setSchema(JsonNode schema) {
         this.schema = schema;
-    }
-
-    public VegaVisualization() { //jpa
     }
 }

@@ -33,6 +33,9 @@ public class Discussion extends AbstractEntity {
         this.visualization = visualization;
     }
 
+    public Discussion() { // jpa
+    }
+
     public Author getAuthor() {
         return author;
     }
@@ -67,9 +70,6 @@ public class Discussion extends AbstractEntity {
 
     public void addQuestion(Question question) {
         this.questions.add(question);
-    }
-
-    public Discussion() { // jpa
     }
 
 }

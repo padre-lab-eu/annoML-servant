@@ -1,11 +1,11 @@
 package org.annoml.servant.SpringAnnoMLServant.model.user;
 
-        import lombok.NonNull;
-        import org.annoml.servant.SpringAnnoMLServant.model.AbstractEntity;
-        import org.annoml.servant.SpringAnnoMLServant.security.SecurityConfig;
+import lombok.NonNull;
+import org.annoml.servant.SpringAnnoMLServant.model.AbstractEntity;
+import org.annoml.servant.SpringAnnoMLServant.security.SecurityConfig;
 
-        import javax.persistence.Column;
-        import javax.persistence.Entity;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 /**
  * Author entity containing username and password.
@@ -25,6 +25,9 @@ public class Author extends AbstractEntity {
         this.password = password;
     }
 
+    public Author() { // jpa
+    }
+
     public String getUsername() {
         return username;
     }
@@ -40,7 +43,6 @@ public class Author extends AbstractEntity {
     public void setPassword(String password) {
         this.password = SecurityConfig.PASSWORD_ENCODER.encode(password);
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -59,8 +61,5 @@ public class Author extends AbstractEntity {
     @Override
     public int hashCode() {
         return Math.toIntExact(getId());
-    }
-
-    public Author() { // jpa
     }
 }

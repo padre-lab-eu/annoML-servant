@@ -25,9 +25,9 @@ import java.util.Collections;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final AuthorDetailsService authorDetailsService;
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
     public static final String REGEX_ID = "?:([1-9][0-9]*)|[1-9]";
+    private final AuthorDetailsService authorDetailsService;
 
     @Autowired
     public SecurityConfig(AuthorDetailsService authorDetailsService) {
@@ -42,16 +42,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(authorDetailsService).passwordEncoder(PASSWORD_ENCODER);
-    }
-
-
-    private class RestAuthEntryPoint implements AuthenticationEntryPoint {
-        @Override
-        public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException
-                authException) throws IOException {
-            response.addHeader("WWW-Authenticate", " ");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-        }
     }
 
     // Fix the CORS errors todo remove this!
@@ -73,5 +63,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
+    }
+
+    private class RestAuthEntryPoint implements AuthenticationEntryPoint {
+        @Override
+        public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException
+                authException) throws IOException {
+            response.addHeader("WWW-Authenticate", " ");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+        }
     }
 }

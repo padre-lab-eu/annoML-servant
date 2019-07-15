@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.annoml.servant.SpringAnnoMLServant.model.AbstractEntity;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
 
 
 @Entity
@@ -25,13 +28,15 @@ public class VegaAnnotation extends AbstractEntity {
     private JsonNode subject;
 
 
-
     public VegaAnnotation(String annotationType, String color, JsonNode note, JsonNode data, JsonNode subject) {
         this.annotationType = annotationType;
         this.color = color;
         this.note = note;
         this.data = data;
         this.subject = subject;
+    }
+
+    public VegaAnnotation() { // JPA
     }
 
     public String getAnnotationType() {
@@ -72,9 +77,6 @@ public class VegaAnnotation extends AbstractEntity {
 
     public void setSubject(JsonNode subject) {
         this.subject = subject;
-    }
-
-    public VegaAnnotation() { // JPA
     }
 
 }

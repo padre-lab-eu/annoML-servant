@@ -3,7 +3,6 @@ package org.annoml.servant.SpringAnnoMLServant.model.discussion;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.annoml.servant.SpringAnnoMLServant.model.AbstractEntity;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaPointAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaRectangleAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
@@ -50,6 +49,9 @@ public class AbstractPost extends AbstractEntity {
         this.rectangleAnnotations = rectangleAnnotations;
     }
 
+    AbstractPost() { // jpa
+    }
+
     public JsonNode getBody() {
         return body;
     }
@@ -86,11 +88,7 @@ public class AbstractPost extends AbstractEntity {
         return rectangleAnnotations;
     }
 
-
     public void setRectangleAnnotations(List<VegaRectangleAnnotation> rectangleAnnotations) {
         this.rectangleAnnotations = rectangleAnnotations;
-    }
-
-    AbstractPost() { // jpa
     }
 }
