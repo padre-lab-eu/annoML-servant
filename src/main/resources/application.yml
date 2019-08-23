@@ -2,6 +2,11 @@
 server:
     port: 9999
 
+authProvider:
+    clientId: "padre"
+    clientSecret: "secret"
+    tokenEndpoint: "http://localhost:8080/oauth/check_token"
+
 spring:
     datasource:
 

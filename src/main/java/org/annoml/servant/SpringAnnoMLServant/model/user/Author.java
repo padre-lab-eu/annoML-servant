@@ -2,64 +2,33 @@ package org.annoml.servant.SpringAnnoMLServant.model.user;
 
 import lombok.NonNull;
 import org.annoml.servant.SpringAnnoMLServant.model.AbstractEntity;
-import org.annoml.servant.SpringAnnoMLServant.security.SecurityConfig;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
 /**
- * Author entity containing username and password.
+ * Author entity containing the external externalId and a username for backup purposes.
  */
 @Entity
 public class Author extends AbstractEntity {
     @Column(unique = true)
-    @NonNull
-    private String username;
-    @NonNull
-    private String password;
+    private String externalId;
 
-
-    public Author(String username, String password) {
-
-        this.username = username;
-        this.password = password;
+    public Author(String externalId) {
+        this.externalId = externalId;
     }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
 
     public Author() { // jpa
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = SecurityConfig.PASSWORD_ENCODER.encode(password);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Author)) {
-            return false;
-        }
-
-        Author author = (Author) o;
-        if (!this.getId().equals(author.getId())) {
-            return false;
-        }
-        return this.getUsername().equals(author.getUsername());
-    }
-
-    @Override
-    public int hashCode() {
-        return Math.toIntExact(getId());
-    }
 }

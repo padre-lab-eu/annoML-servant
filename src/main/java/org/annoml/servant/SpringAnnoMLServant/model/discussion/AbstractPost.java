@@ -10,9 +10,11 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -32,6 +34,17 @@ public class AbstractPost extends AbstractEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
+    @LastModifiedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date edited;
+
+    @OneToMany
+    private List<Author> upVotes;
+    @OneToMany
+    private List<Author> downVotes;
+
+    private boolean starred;
+
     @OneToMany(orphanRemoval = true)
     @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
     @JsonManagedReference
@@ -47,6 +60,12 @@ public class AbstractPost extends AbstractEntity {
         this.author = author;
         this.pointAnnotations = pointAnnotations;
         this.rectangleAnnotations = rectangleAnnotations;
+
+        this.upVotes = new LinkedList<>();
+        this.downVotes = new LinkedList<>();
+        this.starred = false;
+
+
     }
 
     AbstractPost() { // jpa
@@ -74,6 +93,38 @@ public class AbstractPost extends AbstractEntity {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Date getEdited() {
+        return edited;
+    }
+
+    public void setEdited(Date edited) {
+        this.edited = edited;
+    }
+
+    public List<Author> getUpVotes() {
+        return upVotes;
+    }
+
+    public void setUpVotes(List<Author> upVotes) {
+        this.upVotes = upVotes;
+    }
+
+    public List<Author> getDownVotes() {
+        return downVotes;
+    }
+
+    public void setDownVotes(List<Author> downVotes) {
+        this.downVotes = downVotes;
+    }
+
+    public boolean isStarred() {
+        return starred;
+    }
+
+    public void setStarred(boolean starred) {
+        this.starred = starred;
     }
 
     public List<VegaPointAnnotation> getPointAnnotations() {

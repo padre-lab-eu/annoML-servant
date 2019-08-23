@@ -1,5 +1,6 @@
 package org.annoml.servant.SpringAnnoMLServant.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.annoml.servant.SpringAnnoMLServant.dto.*;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaPointAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaRectangleAnnotation;
@@ -8,7 +9,10 @@ import org.annoml.servant.SpringAnnoMLServant.model.discussion.Comment;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Discussion;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Question;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
+import org.annoml.servant.SpringAnnoMLServant.model.visualization.AbstractVisualization;
+import org.annoml.servant.SpringAnnoMLServant.model.visualization.VegaVisualization;
 import org.annoml.servant.SpringAnnoMLServant.repository.*;
+import org.hibernate.validator.constraints.URL;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -27,16 +31,20 @@ public class DiscussionService {
     private final CommentRepository commentRepository;
     private final AuthorRepository authorRepository;
     private final AnnotationRepository annotationRepository;
+    private final VisualizationService visualizationService;
+    private final AuthorizationService authorizationService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public DiscussionService(DiscussionRepository discussionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, CommentRepository commentRepository, ModelMapper modelMapper, AuthorRepository authorRepository, AnnotationRepository annotationRepository) {
+    public DiscussionService(DiscussionRepository discussionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, CommentRepository commentRepository, ModelMapper modelMapper, AuthorRepository authorRepository, AnnotationRepository annotationRepository, VisualizationService visualizationService, AuthorizationService authorizationService) {
         this.discussionRepository = discussionRepository;
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
         this.commentRepository = commentRepository;
         this.authorRepository = authorRepository;
         this.annotationRepository = annotationRepository;
+        this.visualizationService = visualizationService;
+        this.authorizationService = authorizationService;
         this.modelMapper = modelMapper;
     }
 
@@ -55,7 +63,24 @@ public class DiscussionService {
         return convertToDto(discussion);
     }
 
-    public QuestionDto addQuestion(Long id, QuestionDto questionDto) {
+
+    public DiscussionDto createDiscussion(String visualizationId, String visualizationUrl, String authorId) {
+        Author author = getAuthor(authorId);
+        VegaVisualization visualization = visualizationService.addExternalVisualization(visualizationId, visualizationUrl);
+        Discussion discussion = new Discussion(author, visualization);
+        discussionRepository.saveAndFlush(discussion);
+        DiscussionDto discussionDto = convertToDto(discussion);
+        return discussionDto;
+    }
+
+    public DiscussionDto createDiscussionByImport(String authorId, JsonNode schema) {
+        AbstractVisualization visualization = visualizationService.addVegaVisualization(schema);
+        Discussion discussion = new Discussion(this.getAuthor(authorId), visualization);
+        discussionRepository.save(discussion);
+        return convertToDto(discussion);
+    }
+
+    public QuestionDto addQuestion(String authorId, Long id, QuestionDto questionDto) {
         Discussion discussion = this.discussionRepository.findById(id).get();
         List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
         for (VegaPointAnnotationDto d : questionDto.getPointAnnotations()) {
@@ -65,7 +90,7 @@ public class DiscussionService {
         for (VegaRectangleAnnotationDto d : questionDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
-        Question question = new Question(questionDto.getBody(), getCurrentAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, questionDto.getTitle(), new LinkedList<>(), null, questionDto.getColor());
+        Question question = new Question(questionDto.getBody(), getAuthor(authorId), vegaPointAnnotations, vegaRectangleAnnotations, questionDto.getTitle(), new LinkedList<>(), null, questionDto.getColor());
         this.questionRepository.save(question);
         discussion.addQuestion(question);
         return convertToDto(question);
@@ -110,7 +135,7 @@ public class DiscussionService {
         return convertToDto(question);
     }
 
-    public AnswerDto addAnswer(Long questionId, AnswerDto answerDto) {
+    public AnswerDto addAnswer(String authorId, Long questionId, AnswerDto answerDto) {
         Question question = this.questionRepository.findById(questionId).get();
         List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
         for (VegaPointAnnotationDto d : answerDto.getPointAnnotations()) {
@@ -120,7 +145,7 @@ public class DiscussionService {
         for (VegaRectangleAnnotationDto d : answerDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
-        Answer answer = new Answer(answerDto.getBody(), getCurrentAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, new LinkedList<>(), answerDto.getColor());
+        Answer answer = new Answer(answerDto.getBody(), getAuthor(authorId), vegaPointAnnotations, vegaRectangleAnnotations, new LinkedList<>(), answerDto.getColor());
         this.answerRepository.save(answer);
         question.addAnswer(answer);
         return convertToDto(answer);
@@ -164,7 +189,7 @@ public class DiscussionService {
         return convertToDto(answer);
     }
 
-    public CommentDto addComment(Long answerId, CommentDto commentDto) {
+    public CommentDto addComment(String authorId, Long answerId, CommentDto commentDto) {
         Answer answer = this.answerRepository.findById(answerId).get();
         List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
         for (VegaPointAnnotationDto d : commentDto.getPointAnnotations()) {
@@ -174,7 +199,7 @@ public class DiscussionService {
         for (VegaRectangleAnnotationDto d : commentDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
-        Comment comment = new Comment(commentDto.getBody(), getCurrentAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, commentDto.getColor());
+        Comment comment = new Comment(commentDto.getBody(), getAuthor(authorId), vegaPointAnnotations, vegaRectangleAnnotations, commentDto.getColor());
         this.commentRepository.save(comment);
         answer.addComment(comment);
         return convertToDto(comment);
@@ -243,6 +268,10 @@ public class DiscussionService {
         return modelMapper.map(vegaRectangleAnnotationDto, VegaRectangleAnnotation.class);
     }
 
+    private VegaVisualizationDto convertToDto(VegaVisualization vegaVisualization) {
+        return modelMapper.map(vegaVisualization, VegaVisualizationDto.class);
+    }
+
     private AnswerDto convertToDto(Answer answer) {
         return modelMapper.map(answer, AnswerDto.class);
     }
@@ -251,15 +280,12 @@ public class DiscussionService {
         return modelMapper.map(comment, CommentDto.class);
     }
 
-    private Author getCurrentAuthor() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AccessDeniedException("no user?!");
-        }
-        // Author author = ((MyUser) authentication.getPrincipal()).getAuthor();
-        Author author = authorRepository.findByUsername("user1");
+
+    private Author getAuthor(String authorId) {
+        Author author = authorRepository.findAuthorByExternalId(authorId);
         if (author == null) {
-            throw new AccessDeniedException("no user?!");
+            author = new Author(authorId);
+            authorRepository.saveAndFlush(author);
         }
         return author;
     }

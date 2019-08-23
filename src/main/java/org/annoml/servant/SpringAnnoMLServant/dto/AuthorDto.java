@@ -7,7 +7,8 @@ import lombok.NonNull;
 public class AuthorDto {
     private Long id;
     @NonNull
-    private String username;
+    @JsonProperty
+    private Long externalId;
 
     @JsonProperty
     public Long getId() {
@@ -20,12 +21,12 @@ public class AuthorDto {
     }
 
     @JsonProperty
-    public String getUsername() {
-        return username;
+    public Long getExternalId() {
+        return externalId;
     }
-
-    public void setUsername(String username) {
-        this.username = username;
+    @JsonIgnore
+    public void setExternalId(Long externalId) {
+        this.externalId = externalId;
     }
 }
 

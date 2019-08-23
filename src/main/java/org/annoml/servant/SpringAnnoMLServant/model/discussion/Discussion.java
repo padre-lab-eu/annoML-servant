@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -25,6 +26,12 @@ public class Discussion extends AbstractEntity {
     private List<Question> questions;
     @OneToOne
     private AbstractVisualization visualization;
+
+    public Discussion(Author author, AbstractVisualization visualization) {
+        this.author = author;
+        this.questions = new LinkedList<>();
+        this.visualization = visualization;
+    }
 
     public Discussion(Author author, String title, List<Question> questions, AbstractVisualization visualization) {
         this.author = author;

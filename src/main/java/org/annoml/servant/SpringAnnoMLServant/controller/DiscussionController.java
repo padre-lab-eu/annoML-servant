@@ -1,22 +1,27 @@
 package org.annoml.servant.SpringAnnoMLServant.controller;
 
-import org.annoml.servant.SpringAnnoMLServant.dto.AnswerDto;
-import org.annoml.servant.SpringAnnoMLServant.dto.CommentDto;
-import org.annoml.servant.SpringAnnoMLServant.dto.DiscussionDto;
-import org.annoml.servant.SpringAnnoMLServant.dto.QuestionDto;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.annoml.servant.SpringAnnoMLServant.dto.*;
+import org.annoml.servant.SpringAnnoMLServant.service.AuthorizationService;
 import org.annoml.servant.SpringAnnoMLServant.service.DiscussionService;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/discussions")
 public class DiscussionController {
     private final DiscussionService discussionService;
+    private final AuthorizationService authorizationService;
 
     @Autowired
-    public DiscussionController(DiscussionService discussionService) {
+    public DiscussionController(DiscussionService discussionService, AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
         this.discussionService = discussionService;
     }
 
@@ -29,6 +34,32 @@ public class DiscussionController {
     ResponseEntity<DiscussionDto> getDiscussion(@PathVariable Long id) {
         return new ResponseEntity<>(discussionService.getDiscussion(id), HttpStatus.OK);
     }
+
+
+    @RequestMapping(
+            value = "/create", //
+            method = RequestMethod.POST,
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    ResponseEntity<DiscussionDto> createDiscussionByReference(@RequestParam("token") String token, @Valid @RequestBody CreateDiscussionDTO discussionDTO) {
+        if (authorizationService.checkAuthorAccessToken(discussionDTO.getAuthorId(), token)) {
+            return new ResponseEntity<>(discussionService.createDiscussion(discussionDTO.getVisualizationId(), discussionDTO.getVisualizationUrl(), discussionDTO.getAuthorId()), HttpStatus.CREATED);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @RequestMapping(
+            value = "/import", //
+            method = RequestMethod.POST,
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    ResponseEntity<DiscussionDto> createDiscussionByImport(@RequestBody JsonNode schema) {
+        return new ResponseEntity<>(discussionService.createDiscussionByImport(schema), HttpStatus.CREATED);
+    }
+
 
     @RequestMapping(
             value = "/{id}/question", //

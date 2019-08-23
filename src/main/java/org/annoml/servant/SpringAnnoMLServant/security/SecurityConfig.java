@@ -1,6 +1,5 @@
 package org.annoml.servant.SpringAnnoMLServant.security;
 
-import org.annoml.servant.SpringAnnoMLServant.service.AuthorDetailsService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -27,12 +26,8 @@ import java.util.Collections;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
     public static final String REGEX_ID = "?:([1-9][0-9]*)|[1-9]";
-    private final AuthorDetailsService authorDetailsService;
 
-    @Autowired
-    public SecurityConfig(AuthorDetailsService authorDetailsService) {
-        this.authorDetailsService = authorDetailsService;
-    }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -41,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(authorDetailsService).passwordEncoder(PASSWORD_ENCODER);
+
     }
 
     // Fix the CORS errors todo remove this!

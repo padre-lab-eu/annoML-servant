@@ -1,5 +1,6 @@
 package org.annoml.servant.SpringAnnoMLServant.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,11 +14,15 @@ public class VegaVisualizationDto {
     @Id
     @NotNull
     private Long id;
-    @NotNull
-    private AuthorDto author;
-    @NotNull
-    private String title;
-    @NotNull
+    @JsonProperty
+    private String description;
+    @JsonProperty
     private JsonNode schema;
+    @JsonProperty
+    private String visualizationUrl;
+    @JsonProperty
+    private String externalId;
+    @JsonProperty
+    private String hash;
 
 }

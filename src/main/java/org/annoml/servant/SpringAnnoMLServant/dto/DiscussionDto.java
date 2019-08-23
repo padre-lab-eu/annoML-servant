@@ -16,7 +16,6 @@ public class DiscussionDto {
     private Long id;
     @NotNull
     private AuthorDto author;
-    @NotNull
     private String title;
     @NotNull
     private List<QuestionDto> questions;
