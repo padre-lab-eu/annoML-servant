@@ -42,12 +42,9 @@ public class DiscussionController {
             consumes = "application/json",
             produces = "application/json"
     )
-    ResponseEntity<DiscussionDto> createDiscussionByReference(@RequestParam("token") String token, @Valid @RequestBody CreateDiscussionDTO discussionDTO) {
-        if (authorizationService.checkAuthorAccessToken(discussionDTO.getAuthorId(), token)) {
-            return new ResponseEntity<>(discussionService.createDiscussion(discussionDTO.getVisualizationId(), discussionDTO.getVisualizationUrl(), discussionDTO.getAuthorId()), HttpStatus.CREATED);
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+    ResponseEntity<DiscussionDto> createDiscussionByReference(@Valid @RequestBody CreateDiscussionDTO discussionDTO) {
+            return new ResponseEntity<>(discussionService.createDiscussion(discussionDTO.getVisualizationId(), discussionDTO.getVisualizationUrl()), HttpStatus.CREATED);
+
     }
 
     @RequestMapping(

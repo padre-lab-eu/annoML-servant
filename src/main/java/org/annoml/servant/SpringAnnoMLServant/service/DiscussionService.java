@@ -64,8 +64,8 @@ public class DiscussionService {
     }
 
 
-    public DiscussionDto createDiscussion(String visualizationId, String visualizationUrl, String authorId) {
-        Author author = getAuthor(authorId);
+    public DiscussionDto createDiscussion(String visualizationId, String visualizationUrl) {
+        Author author = getAuthor();
         VegaVisualization visualization = visualizationService.addExternalVisualization(visualizationId, visualizationUrl);
         Discussion discussion = new Discussion(author, visualization);
         discussionRepository.saveAndFlush(discussion);
@@ -73,14 +73,14 @@ public class DiscussionService {
         return discussionDto;
     }
 
-    public DiscussionDto createDiscussionByImport(String authorId, JsonNode schema) {
+    public DiscussionDto createDiscussionByImport(JsonNode schema) {
         AbstractVisualization visualization = visualizationService.addVegaVisualization(schema);
-        Discussion discussion = new Discussion(this.getAuthor(authorId), visualization);
+        Discussion discussion = new Discussion(this.getAuthor(), visualization);
         discussionRepository.save(discussion);
         return convertToDto(discussion);
     }
 
-    public QuestionDto addQuestion(String authorId, Long id, QuestionDto questionDto) {
+    public QuestionDto addQuestion(Long id, QuestionDto questionDto) {
         Discussion discussion = this.discussionRepository.findById(id).get();
         List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
         for (VegaPointAnnotationDto d : questionDto.getPointAnnotations()) {
@@ -90,7 +90,7 @@ public class DiscussionService {
         for (VegaRectangleAnnotationDto d : questionDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
-        Question question = new Question(questionDto.getBody(), getAuthor(authorId), vegaPointAnnotations, vegaRectangleAnnotations, questionDto.getTitle(), new LinkedList<>(), null, questionDto.getColor());
+        Question question = new Question(questionDto.getBody(), getAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, questionDto.getTitle(), new LinkedList<>(), null, questionDto.getColor());
         this.questionRepository.save(question);
         discussion.addQuestion(question);
         return convertToDto(question);
@@ -135,7 +135,7 @@ public class DiscussionService {
         return convertToDto(question);
     }
 
-    public AnswerDto addAnswer(String authorId, Long questionId, AnswerDto answerDto) {
+    public AnswerDto addAnswer(Long questionId, AnswerDto answerDto) {
         Question question = this.questionRepository.findById(questionId).get();
         List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
         for (VegaPointAnnotationDto d : answerDto.getPointAnnotations()) {
@@ -145,7 +145,7 @@ public class DiscussionService {
         for (VegaRectangleAnnotationDto d : answerDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
-        Answer answer = new Answer(answerDto.getBody(), getAuthor(authorId), vegaPointAnnotations, vegaRectangleAnnotations, new LinkedList<>(), answerDto.getColor());
+        Answer answer = new Answer(answerDto.getBody(), getAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, new LinkedList<>(), answerDto.getColor());
         this.answerRepository.save(answer);
         question.addAnswer(answer);
         return convertToDto(answer);
@@ -189,7 +189,7 @@ public class DiscussionService {
         return convertToDto(answer);
     }
 
-    public CommentDto addComment(String authorId, Long answerId, CommentDto commentDto) {
+    public CommentDto addComment(Long answerId, CommentDto commentDto) {
         Answer answer = this.answerRepository.findById(answerId).get();
         List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
         for (VegaPointAnnotationDto d : commentDto.getPointAnnotations()) {
@@ -199,7 +199,7 @@ public class DiscussionService {
         for (VegaRectangleAnnotationDto d : commentDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
-        Comment comment = new Comment(commentDto.getBody(), getAuthor(authorId), vegaPointAnnotations, vegaRectangleAnnotations, commentDto.getColor());
+        Comment comment = new Comment(commentDto.getBody(), getAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, commentDto.getColor());
         this.commentRepository.save(comment);
         answer.addComment(comment);
         return convertToDto(comment);
@@ -281,7 +281,13 @@ public class DiscussionService {
     }
 
 
-    private Author getAuthor(String authorId) {
+    private Author getAuthor() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("no user?!");
+        }
+        String authorId =  authentication.getPrincipal().toString();
+
         Author author = authorRepository.findAuthorByExternalId(authorId);
         if (author == null) {
             author = new Author(authorId);

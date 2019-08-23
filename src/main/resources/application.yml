@@ -1,37 +1,43 @@
-## server
 server:
-    port: 9999
+  port: 9999
 
 authProvider:
-    clientId: "padre"
-    clientSecret: "secret"
-    tokenEndpoint: "http://localhost:8080/oauth/check_token"
+  clientId: "padre"
+  clientSecret: "secret"
+  tokenEndpoint: "http://localhost:8080/oauth/check_token"
+  jwt:
+    header: Authorization
+    secret: annoml
+
 
 spring:
-    datasource:
+  http:
+    log-request-details: true
 
-        ## default connection pool
-        hikari:
-            connection-timeout: 20000
-            maximum-pool-size: 5
+  datasource:
 
-        ## PostgreSQL
-        url: jdbc:postgresql://localhost:5432/annoml
-        username: annoml
-        password: AnnoML
+    ## default connection pool
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 5
 
-    #drop n create table again, good for testing, comment this in production
-    jpa:
+    ## PostgreSQL
+    url: jdbc:postgresql://localhost:5432/annoml
+    username: annoml
+    password: AnnoML
+
+  #drop n create table again, good for testing, comment this in production
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    generate-ddl: true
+
+    properties:
       hibernate:
-        ddl-auto: create
-      show-sql: true
-      generate-ddl: true
-
-      properties:
-        hibernate:
-          jdbc:
-            lob:
-              non_contextual_creation: true
-      database-platform: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 debug: true
