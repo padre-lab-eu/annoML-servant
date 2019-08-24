@@ -32,11 +32,10 @@ public class DiscussionService {
     private final AuthorRepository authorRepository;
     private final AnnotationRepository annotationRepository;
     private final VisualizationService visualizationService;
-    private final AuthorizationService authorizationService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public DiscussionService(DiscussionRepository discussionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, CommentRepository commentRepository, ModelMapper modelMapper, AuthorRepository authorRepository, AnnotationRepository annotationRepository, VisualizationService visualizationService, AuthorizationService authorizationService) {
+    public DiscussionService(DiscussionRepository discussionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, CommentRepository commentRepository, ModelMapper modelMapper, AuthorRepository authorRepository, AnnotationRepository annotationRepository, VisualizationService visualizationService) {
         this.discussionRepository = discussionRepository;
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
@@ -44,7 +43,6 @@ public class DiscussionService {
         this.authorRepository = authorRepository;
         this.annotationRepository = annotationRepository;
         this.visualizationService = visualizationService;
-        this.authorizationService = authorizationService;
         this.modelMapper = modelMapper;
     }
 

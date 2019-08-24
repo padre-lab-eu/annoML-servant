@@ -8,7 +8,7 @@ public class AuthorDto {
     private Long id;
     @NonNull
     @JsonProperty
-    private Long externalId;
+    private String externalId;
 
     @JsonProperty
     public Long getId() {
@@ -21,11 +21,11 @@ public class AuthorDto {
     }
 
     @JsonProperty
-    public Long getExternalId() {
+    public String getExternalId() {
         return externalId;
     }
     @JsonIgnore
-    public void setExternalId(Long externalId) {
+    public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
 }

@@ -13,15 +13,12 @@ public class CreateDiscussionDTO {
     @URL
     @NonNull
     String visualizationUrl;
-    @NonNull
-    String authorId;
 
     @Override
     public String toString() {
         return "CreateDiscussionDTO{" +
                 "id='" + visualizationId + '\'' +
                 ", url='" + visualizationUrl + '\'' +
-                ", author='" + authorId + '\'' +
                 '}';
     }
 }

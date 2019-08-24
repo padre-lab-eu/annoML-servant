@@ -13,6 +13,7 @@ import java.util.List;
  * Provides mapping for the rest api paths
  */
 @RestController
+@CrossOrigin("http://localhost:9090")
 @RequestMapping("/visualizations")
 public class VisualizationController {
     private final VisualizationService visualizationService;

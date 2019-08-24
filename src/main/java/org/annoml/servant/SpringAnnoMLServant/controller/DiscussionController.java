@@ -2,26 +2,22 @@ package org.annoml.servant.SpringAnnoMLServant.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.annoml.servant.SpringAnnoMLServant.dto.*;
-import org.annoml.servant.SpringAnnoMLServant.service.AuthorizationService;
 import org.annoml.servant.SpringAnnoMLServant.service.DiscussionService;
-import org.hibernate.validator.constraints.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
 
 @RestController
+@CrossOrigin("http://localhost:9090")
 @RequestMapping("/discussions")
 public class DiscussionController {
     private final DiscussionService discussionService;
-    private final AuthorizationService authorizationService;
 
     @Autowired
-    public DiscussionController(DiscussionService discussionService, AuthorizationService authorizationService) {
-        this.authorizationService = authorizationService;
+    public DiscussionController(DiscussionService discussionService) {
         this.discussionService = discussionService;
     }
 
@@ -37,7 +33,7 @@ public class DiscussionController {
 
 
     @RequestMapping(
-            value = "/create", //
+            value = "/create",
             method = RequestMethod.POST,
             consumes = "application/json",
             produces = "application/json"
