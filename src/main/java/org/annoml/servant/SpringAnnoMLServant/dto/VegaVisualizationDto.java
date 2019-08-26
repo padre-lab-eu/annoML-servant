@@ -19,9 +19,9 @@ public class VegaVisualizationDto {
     @JsonProperty
     private JsonNode schema;
     @JsonProperty
-    private String visualizationUrl;
+    private String url;
     @JsonProperty
-    private String externalId;
+    private String reference;
     @JsonProperty
     private String hash;
 

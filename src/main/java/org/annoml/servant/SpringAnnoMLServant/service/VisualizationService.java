@@ -2,8 +2,11 @@ package org.annoml.servant.SpringAnnoMLServant.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.annoml.servant.SpringAnnoMLServant.dto.VegaVisualizationDto;
+import org.annoml.servant.SpringAnnoMLServant.exception.NotFoundException;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.AbstractVisualization;
+import org.annoml.servant.SpringAnnoMLServant.model.visualization.ExternalReferenceVisualization;
+import org.annoml.servant.SpringAnnoMLServant.model.visualization.ExternalUrlVisualization;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.VegaVisualization;
 import org.annoml.servant.SpringAnnoMLServant.repository.AuthorRepository;
 import org.annoml.servant.SpringAnnoMLServant.repository.VisualizationRepository;
@@ -39,12 +42,18 @@ public class VisualizationService {
     }
 
     public VegaVisualizationDto getVegaVisualization(Long id) {
-        AbstractVisualization visualization = this.visualizationRepository.findById(id).get();
+        AbstractVisualization visualization = this.visualizationRepository.findById(id).orElseThrow(() -> new NotFoundException("No visualization found"));
         return convertToDto(visualization);
     }
 
-    public VegaVisualization addExternalVisualization( String visualizationId, String visualizationUrl) {
-        VegaVisualization visualization = new VegaVisualization(visualizationId, visualizationUrl);
+    public ExternalReferenceVisualization addExternalVisualizationById(String visualizationId) {
+        ExternalReferenceVisualization visualization = new ExternalReferenceVisualization(visualizationId);
+        visualizationRepository.saveAndFlush(visualization);
+        return visualization;
+    }
+
+    public ExternalUrlVisualization addExternalVisualizationByUrl(String visualizationUrl) {
+        ExternalUrlVisualization visualization = new ExternalUrlVisualization(visualizationUrl);
         visualizationRepository.saveAndFlush(visualization);
         return visualization;
     }

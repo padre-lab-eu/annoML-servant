@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -16,6 +17,10 @@ public class CommentDto {
     @Id
     @NotNull
     private Long id;
+    @DateTimeFormat
+    private Date created;
+    @DateTimeFormat
+    private Date edited;
     @NotNull
     private AuthorDto author;
     @NotNull
@@ -28,4 +33,5 @@ public class CommentDto {
     private List<VegaRectangleAnnotationDto> rectangleAnnotations;
     @NotNull
     private String color;
+    private boolean highlighted;
 }

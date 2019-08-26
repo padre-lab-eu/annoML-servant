@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
 @RestController
 @CrossOrigin("http://localhost:9090")
@@ -33,24 +32,37 @@ public class DiscussionController {
 
 
     @RequestMapping(
-            value = "/create",
+            value = "/create/reference",
             method = RequestMethod.POST,
             consumes = "application/json",
             produces = "application/json"
     )
-    ResponseEntity<DiscussionDto> createDiscussionByReference(@Valid @RequestBody CreateDiscussionDTO discussionDTO) {
-            return new ResponseEntity<>(discussionService.createDiscussion(discussionDTO.getVisualizationId(), discussionDTO.getVisualizationUrl()), HttpStatus.CREATED);
+    ResponseEntity<DiscussionDto> createDiscussionByReference(@RequestBody CreateDiscussionDto createDiscussionDto) {
+            return new ResponseEntity<>(discussionService.createDiscussionWithReference(createDiscussionDto.getReference()), HttpStatus.CREATED);
 
     }
 
+
     @RequestMapping(
-            value = "/import", //
+            value = "/create/url",
+            method = RequestMethod.POST,
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    ResponseEntity<DiscussionDto> createDiscussionByUrl(@RequestBody CreateDiscussionDto createDiscussionDto) {
+        return new ResponseEntity<>(discussionService.createDiscussionWithUrl(createDiscussionDto.getUrl()), HttpStatus.CREATED);
+
+    }
+
+
+    @RequestMapping(
+            value = "/create/import", //
             method = RequestMethod.POST,
             consumes = "application/json",
             produces = "application/json"
     )
     ResponseEntity<DiscussionDto> createDiscussionByImport(@RequestBody JsonNode schema) {
-        return new ResponseEntity<>(discussionService.createDiscussionByImport(schema), HttpStatus.CREATED);
+        return new ResponseEntity<>(discussionService.createDiscussionWithImport(schema), HttpStatus.CREATED);
     }
 
 
@@ -84,6 +96,24 @@ public class DiscussionController {
     }
 
     @RequestMapping(
+            value = "/questions/{questionId}/vote/up",
+            method = RequestMethod.POST,
+            produces = "application/json"
+    )
+    ResponseEntity<QuestionDto> upvoteQuestion(@PathVariable Long questionId) {
+        return new ResponseEntity<>(discussionService.upVoteQuestion(questionId), HttpStatus.OK);
+    }
+
+    @RequestMapping(
+            value = "/questions/{questionId}/vote/down",
+            method = RequestMethod.POST,
+            produces = "application/json"
+    )
+    ResponseEntity<QuestionDto> downvoteQuestion(@PathVariable Long questionId) {
+        return new ResponseEntity<>(discussionService.downVoteQuestion(questionId), HttpStatus.OK);
+    }
+
+    @RequestMapping(
             value = "/questions/{questionId}/answer", //
             method = RequestMethod.POST,
             consumes = "application/json",
@@ -113,12 +143,30 @@ public class DiscussionController {
     }
 
     @RequestMapping(
+            value = "/answers/{answerId}/vote/up",
+            method = RequestMethod.POST,
+            produces = "application/json"
+    )
+    ResponseEntity<AnswerDto> upvoteAnswer(@PathVariable Long answerId) {
+        return new ResponseEntity<>(discussionService.upVoteAnswer(answerId), HttpStatus.OK);
+    }
+
+    @RequestMapping(
+            value = "/answers/{answerId}/vote/down",
+            method = RequestMethod.POST,
+            produces = "application/json"
+    )
+    ResponseEntity<AnswerDto> downvoteAnswer(@PathVariable Long answerId) {
+        return new ResponseEntity<>(discussionService.downVoteAnswer(answerId), HttpStatus.OK);
+    }
+
+    @RequestMapping(
             value = "/answers/{answerId}/comment", //
             method = RequestMethod.POST,
             consumes = "application/json",
             produces = "application/json"
     )
-    ResponseEntity<CommentDto> addAnswer(@PathVariable Long answerId, @RequestBody CommentDto commentDto) {
+    ResponseEntity<CommentDto> addComment(@PathVariable Long answerId, @RequestBody CommentDto commentDto) {
         return new ResponseEntity<>(discussionService.addComment(answerId, commentDto), HttpStatus.CREATED);
     }
 
@@ -141,6 +189,41 @@ public class DiscussionController {
         return new ResponseEntity<>(discussionService.deleteComment(commentId), HttpStatus.OK);
     }
 
+    @RequestMapping(
+            value = "/comments/{commentId}/vote/up",
+            method = RequestMethod.POST,
+            produces = "application/json"
+    )
+    ResponseEntity<CommentDto> upvoteComment(@PathVariable Long commentId) {
+        return new ResponseEntity<>(discussionService.upVoteComment(commentId), HttpStatus.OK);
+    }
+
+    @RequestMapping(
+            value = "/comments/{commentId}/vote/down",
+            method = RequestMethod.POST,
+            produces = "application/json"
+    )
+    ResponseEntity<CommentDto> downvoteComment(@PathVariable Long commentId) {
+        return new ResponseEntity<>(discussionService.downVoteComment(commentId), HttpStatus.OK);
+    }
+
+    @RequestMapping(
+            value = "/questions/{questionId}/highlight/{postId}", //
+            method = RequestMethod.POST,
+            produces = "application/json"
+    )
+    ResponseEntity<QuestionDto> addHighlitedPost(@PathVariable Long questionId, @PathVariable Long postId) {
+        return new ResponseEntity<>(discussionService.setHighlightedPost(questionId, postId), HttpStatus.OK);
+    }
+
+    @RequestMapping(
+            value = "/questions/{questionId}/highlight", //
+            method = RequestMethod.DELETE,
+            produces = "application/json"
+    )
+    ResponseEntity<QuestionDto> removeHighlitedPost(@PathVariable Long questionId) {
+        return new ResponseEntity<>(discussionService.removeHighlightedPost(questionId), HttpStatus.OK);
+    }
 
 }
 

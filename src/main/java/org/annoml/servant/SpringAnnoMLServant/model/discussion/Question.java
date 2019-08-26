@@ -25,16 +25,16 @@ public class Question extends AbstractPost {
     private String title;
     @OneToMany(orphanRemoval = true)
     private List<Answer> answers;
-    @OneToOne
-    private Answer favorite;
+
     @Length(max = 7)
     private String color;
+    @OneToOne
+    private AbstractPost highlighted;
 
-    public Question(JsonNode body, Author author, List<VegaPointAnnotation> pointAnnotations, List<VegaRectangleAnnotation> rectangleAnnotations, @NonNull @Length(max = 255) String title, List<Answer> answers, Answer favorite, @Length(max = 7) String color) {
+    public Question(JsonNode body, Author author, List<VegaPointAnnotation> pointAnnotations, List<VegaRectangleAnnotation> rectangleAnnotations, @NonNull @Length(max = 255) String title, List<Answer> answers, @Length(max = 7) String color) {
         super(body, author, pointAnnotations, rectangleAnnotations);
         this.title = title;
         this.answers = answers;
-        this.favorite = favorite;
         this.color = color;
     }
 
@@ -58,14 +58,6 @@ public class Question extends AbstractPost {
         this.answers = answers;
     }
 
-    public Answer getFavorite() {
-        return favorite;
-    }
-
-    public void setFavorite(Answer favorite) {
-        this.favorite = favorite;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -76,5 +68,13 @@ public class Question extends AbstractPost {
 
     public void addAnswer(Answer answer) {
         this.answers.add(answer);
+    }
+
+    public AbstractPost getHighlighted() {
+        return highlighted;
+    }
+
+    public void setHighlighted(AbstractPost highlighted) {
+        this.highlighted = highlighted;
     }
 }

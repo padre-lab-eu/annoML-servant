@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -16,6 +17,10 @@ public class AnswerDto {
     @Id
     @NotNull
     private Long id;
+    @DateTimeFormat
+    private Date created;
+    @DateTimeFormat
+    private Date edited;
     @NotNull
     private List<CommentDto> comments;
     @NotNull

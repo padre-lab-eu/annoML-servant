@@ -2,6 +2,7 @@ package org.annoml.servant.SpringAnnoMLServant.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.annoml.servant.SpringAnnoMLServant.dto.*;
+import org.annoml.servant.SpringAnnoMLServant.exception.NotFoundException;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaPointAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaRectangleAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Answer;
@@ -10,9 +11,10 @@ import org.annoml.servant.SpringAnnoMLServant.model.discussion.Discussion;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Question;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.AbstractVisualization;
+import org.annoml.servant.SpringAnnoMLServant.model.visualization.ExternalReferenceVisualization;
+import org.annoml.servant.SpringAnnoMLServant.model.visualization.ExternalUrlVisualization;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.VegaVisualization;
 import org.annoml.servant.SpringAnnoMLServant.repository.*;
-import org.hibernate.validator.constraints.URL;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -57,21 +59,30 @@ public class DiscussionService {
     }
 
     public DiscussionDto getDiscussion(Long id) {
-        Discussion discussion = this.discussionRepository.findById(id).get();
+        Discussion discussion = this.discussionRepository.findById(id).orElseThrow(() -> new NotFoundException("No discussion found"));
         return convertToDto(discussion);
     }
 
 
-    public DiscussionDto createDiscussion(String visualizationId, String visualizationUrl) {
-        Author author = getAuthor();
-        VegaVisualization visualization = visualizationService.addExternalVisualization(visualizationId, visualizationUrl);
+    public DiscussionDto createDiscussionWithReference(String visualizationId) {
+        Author author = getOrCreateAuthor();
+        ExternalReferenceVisualization visualization = visualizationService.addExternalVisualizationById(visualizationId);
         Discussion discussion = new Discussion(author, visualization);
         discussionRepository.saveAndFlush(discussion);
         DiscussionDto discussionDto = convertToDto(discussion);
         return discussionDto;
     }
 
-    public DiscussionDto createDiscussionByImport(JsonNode schema) {
+    public DiscussionDto createDiscussionWithUrl(String visualizationUrl) {
+        Author author = getOrCreateAuthor();
+        ExternalUrlVisualization visualization = visualizationService.addExternalVisualizationByUrl(visualizationUrl);
+        Discussion discussion = new Discussion(author, visualization);
+        discussionRepository.saveAndFlush(discussion);
+        DiscussionDto discussionDto = convertToDto(discussion);
+        return discussionDto;
+    }
+
+    public DiscussionDto createDiscussionWithImport(JsonNode schema) {
         AbstractVisualization visualization = visualizationService.addVegaVisualization(schema);
         Discussion discussion = new Discussion(this.getAuthor(), visualization);
         discussionRepository.save(discussion);
@@ -79,7 +90,7 @@ public class DiscussionService {
     }
 
     public QuestionDto addQuestion(Long id, QuestionDto questionDto) {
-        Discussion discussion = this.discussionRepository.findById(id).get();
+        Discussion discussion = this.discussionRepository.findById(id).orElseThrow(() -> new NotFoundException("No discussion found"));
         List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
         for (VegaPointAnnotationDto d : questionDto.getPointAnnotations()) {
             vegaPointAnnotations.add(convertToEntity(d));
@@ -88,14 +99,15 @@ public class DiscussionService {
         for (VegaRectangleAnnotationDto d : questionDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
-        Question question = new Question(questionDto.getBody(), getAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, questionDto.getTitle(), new LinkedList<>(), null, questionDto.getColor());
-        this.questionRepository.save(question);
+        Question question = new Question(questionDto.getBody(), getOrCreateAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, questionDto.getTitle(), new LinkedList<>(), questionDto.getColor());
+        this.questionRepository.saveAndFlush(question);
         discussion.addQuestion(question);
         return convertToDto(question);
     }
 
     public QuestionDto updateQuestion(Long questionId, QuestionDto questionDto) {
-        Question question = this.questionRepository.findById(questionId).get();
+        Question question = this.questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("No question found"));
+        if (getAuthor().equals(question.getAuthor())) {
         List<VegaPointAnnotation> vegaPointAnnotations = question.getPointAnnotations();
         for (VegaPointAnnotationDto d : questionDto.getPointAnnotations()) {
             if (this.annotationRepository.findById(d.getId()).isPresent()) {
@@ -125,16 +137,66 @@ public class DiscussionService {
         question.setColor(questionDto.getColor());
         this.questionRepository.saveAndFlush(question);
         return convertToDto(question);
+    } else {
+        throw new AccessDeniedException("Not the question author");
+    }
     }
 
     public QuestionDto deleteQuestion(Long questionId) {
-        Question question = this.questionRepository.findById(questionId).get();
-        this.questionRepository.delete(question);
+        Question question = this.questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("No question found"));
+        if (getAuthor().equals(question.getAuthor())) {
+            this.questionRepository.delete(question);
+            return convertToDto(question);
+        } else {
+            throw new AccessDeniedException("Not the question author");
+        }
+    }
+
+    public QuestionDto upVoteQuestion(Long questionId) {
+        Question question = this.questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("No question found"));
+        question.addUpVote(getOrCreateAuthor());
         return convertToDto(question);
     }
 
-    public AnswerDto addAnswer(Long questionId, AnswerDto answerDto) {
+    public QuestionDto downVoteQuestion(Long questionId) {
+        Question question = this.questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("No question found"));
+        question.addDownVote(getOrCreateAuthor());
+        return convertToDto(question);
+    }
+
+    public QuestionDto setHighlightedPost(Long questionId, Long postId) {
+        Question question = this.questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("No question found"));
+        if (question.getAuthor().equals(getAuthor())) {
+            question.getAnswers().forEach(answer -> {
+                if (answer.getId().equals(postId)) {
+                    question.setHighlighted(answer);
+                } else {
+                    answer.getComments().forEach(comment -> {
+                        if (comment.getId().equals(postId)) {
+                            question.setHighlighted(comment);
+                        }
+                    });
+                }
+            });
+        } else {
+            throw new AccessDeniedException("Not the question author");
+        }
+        return convertToDto(question);
+    }
+
+    public QuestionDto removeHighlightedPost(Long questionId) {
         Question question = this.questionRepository.findById(questionId).get();
+        if (question.getAuthor().equals(getAuthor())) {
+            question.setHighlighted(null);
+        } else {
+            throw new AccessDeniedException("Not the question author");
+        }
+        return convertToDto(question);
+        }
+
+
+    public AnswerDto addAnswer(Long questionId, AnswerDto answerDto) {
+        Question question = this.questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("No question found"));
         List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
         for (VegaPointAnnotationDto d : answerDto.getPointAnnotations()) {
             vegaPointAnnotations.add(convertToEntity(d));
@@ -143,14 +205,15 @@ public class DiscussionService {
         for (VegaRectangleAnnotationDto d : answerDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
-        Answer answer = new Answer(answerDto.getBody(), getAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, new LinkedList<>(), answerDto.getColor());
-        this.answerRepository.save(answer);
+        Answer answer = new Answer(answerDto.getBody(), getOrCreateAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, new LinkedList<>(), answerDto.getColor());
+        this.answerRepository.saveAndFlush(answer);
         question.addAnswer(answer);
         return convertToDto(answer);
     }
 
     public AnswerDto updateAnswer(Long answerId, AnswerDto answerDto) {
-        Answer answer = this.answerRepository.findById(answerId).get();
+        Answer answer = this.answerRepository.findById(answerId).orElseThrow(() -> new NotFoundException("No answer found"));
+        if (getAuthor().equals(answer.getAuthor())) {
         List<VegaPointAnnotation> vegaPointAnnotations = answer.getPointAnnotations();
         for (VegaPointAnnotationDto d : answerDto.getPointAnnotations()) {
             if (this.annotationRepository.findById(d.getId()).isPresent()) {
@@ -179,16 +242,35 @@ public class DiscussionService {
         answer.setColor(answer.getColor());
         this.answerRepository.saveAndFlush(answer);
         return convertToDto(answer);
+        } else {
+            throw new AccessDeniedException("Not the answer author");
+        }
     }
 
     public AnswerDto deleteAnswer(Long answerId) {
-        Answer answer = this.answerRepository.findById(answerId).get();
-        this.answerRepository.delete(answer);
+        Answer answer = this.answerRepository.findById(answerId).orElseThrow(() -> new NotFoundException("No answer found"));
+        if (getAuthor().equals(answer.getAuthor())) {
+            this.answerRepository.delete(answer);
+            return convertToDto(answer);
+        } else {
+            throw new AccessDeniedException("Not the answer author");
+        }
+    }
+
+    public AnswerDto upVoteAnswer(Long answerId) {
+        Answer answer = this.answerRepository.findById(answerId).orElseThrow(() -> new NotFoundException("No answer found"));
+        answer.addUpVote(getOrCreateAuthor());
+        return convertToDto(answer);
+    }
+
+    public AnswerDto downVoteAnswer(Long answerId) {
+        Answer answer = this.answerRepository.findById(answerId).orElseThrow(() -> new NotFoundException("No answer found"));
+        answer.addDownVote(getOrCreateAuthor());
         return convertToDto(answer);
     }
 
     public CommentDto addComment(Long answerId, CommentDto commentDto) {
-        Answer answer = this.answerRepository.findById(answerId).get();
+        Answer answer = this.answerRepository.findById(answerId).orElseThrow(() -> new NotFoundException("No answer found"));
         List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
         for (VegaPointAnnotationDto d : commentDto.getPointAnnotations()) {
             vegaPointAnnotations.add(convertToEntity(d));
@@ -197,47 +279,67 @@ public class DiscussionService {
         for (VegaRectangleAnnotationDto d : commentDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
-        Comment comment = new Comment(commentDto.getBody(), getAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, commentDto.getColor());
-        this.commentRepository.save(comment);
+        Comment comment = new Comment(commentDto.getBody(), getOrCreateAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, commentDto.getColor());
+        this.commentRepository.saveAndFlush(comment);
         answer.addComment(comment);
         return convertToDto(comment);
     }
 
     public CommentDto updateComment(Long answerId, CommentDto commentDto) {
-        Comment comment = this.commentRepository.findById(answerId).get();
-        List<VegaPointAnnotation> vegaPointAnnotations = comment.getPointAnnotations();
-        for (VegaPointAnnotationDto d : commentDto.getPointAnnotations()) {
-            if (this.annotationRepository.findById(d.getId()).isPresent()) {
-                VegaPointAnnotation annotation = (VegaPointAnnotation) this.annotationRepository.findById(d.getId()).get();
-                annotation.setColor(d.getColor());
-                annotation.setData(d.getData());
-                annotation.setNote(d.getNote());
-                annotation.setSubject(d.getSubject());
-            } else {
-                vegaPointAnnotations.add(convertToEntity(d));
+        Comment comment = this.commentRepository.findById(answerId).orElseThrow(() -> new NotFoundException("No comment found"));
+        if (getAuthor().equals(comment.getAuthor())) {
+            List<VegaPointAnnotation> vegaPointAnnotations = comment.getPointAnnotations();
+            for (VegaPointAnnotationDto d : commentDto.getPointAnnotations()) {
+                if (this.annotationRepository.findById(d.getId()).isPresent()) {
+                    VegaPointAnnotation annotation = (VegaPointAnnotation) this.annotationRepository.findById(d.getId()).get();
+                    annotation.setColor(d.getColor());
+                    annotation.setData(d.getData());
+                    annotation.setNote(d.getNote());
+                    annotation.setSubject(d.getSubject());
+                } else {
+                    vegaPointAnnotations.add(convertToEntity(d));
+                }
             }
-        }
-        List<VegaRectangleAnnotation> vegaRectangleAnnotations = comment.getRectangleAnnotations();
-        for (VegaRectangleAnnotationDto d : commentDto.getRectangleAnnotations()) {
-            if (this.annotationRepository.findById(d.getId()).isPresent()) {
-                VegaRectangleAnnotation annotation = (VegaRectangleAnnotation) this.annotationRepository.findById(d.getId()).get();
-                annotation.setColor(d.getColor());
-                annotation.setData(d.getData());
-                annotation.setNote(d.getNote());
-                annotation.setSubject(d.getSubject());
-            } else {
-                vegaRectangleAnnotations.add(convertToEntity(d));
+            List<VegaRectangleAnnotation> vegaRectangleAnnotations = comment.getRectangleAnnotations();
+            for (VegaRectangleAnnotationDto d : commentDto.getRectangleAnnotations()) {
+                if (this.annotationRepository.findById(d.getId()).isPresent()) {
+                    VegaRectangleAnnotation annotation = (VegaRectangleAnnotation) this.annotationRepository.findById(d.getId()).get();
+                    annotation.setColor(d.getColor());
+                    annotation.setData(d.getData());
+                    annotation.setNote(d.getNote());
+                    annotation.setSubject(d.getSubject());
+                } else {
+                    vegaRectangleAnnotations.add(convertToEntity(d));
+                }
             }
+            comment.setBody(commentDto.getBody());
+            comment.setColor(comment.getColor());
+            this.commentRepository.saveAndFlush(comment);
+            return convertToDto(comment);
+        } else {
+            throw new AccessDeniedException("Not the comment author");
         }
-        comment.setBody(commentDto.getBody());
-        comment.setColor(comment.getColor());
-        this.commentRepository.saveAndFlush(comment);
-        return convertToDto(comment);
     }
 
     public CommentDto deleteComment(Long commentId) {
-        Comment comment = this.commentRepository.findById(commentId).get();
-        this.commentRepository.delete(comment);
+        Comment comment = this.commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("No comment found"));
+        if (getAuthor().equals(comment.getAuthor())) {
+            this.commentRepository.delete(comment);
+            return convertToDto(comment);
+        } else {
+            throw new AccessDeniedException("Not the question author");
+        }
+    }
+
+    public CommentDto upVoteComment(Long commentId) {
+        Comment comment = this.commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("No comment found"));
+        comment.addUpVote(getOrCreateAuthor());
+        return convertToDto(comment);
+    }
+
+    public CommentDto downVoteComment(Long commentId) {
+        Comment comment = this.commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("No comment found"));
+        comment.addDownVote(getOrCreateAuthor());
         return convertToDto(comment);
     }
 
@@ -280,6 +382,17 @@ public class DiscussionService {
 
 
     private Author getAuthor() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("no user?!");
+        }
+        String authorId =  authentication.getPrincipal().toString();
+
+        Author author = authorRepository.findAuthorByExternalId(authorId);
+        return author;
+    }
+
+    private Author getOrCreateAuthor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new AccessDeniedException("no user?!");

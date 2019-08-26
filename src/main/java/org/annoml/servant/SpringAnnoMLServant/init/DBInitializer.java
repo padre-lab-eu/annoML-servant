@@ -53,46 +53,9 @@ public class DBInitializer implements ApplicationRunner {
         String autofill = environment.getProperty("autofillAtStartup");
         if (autofill != null && autofill.equals("true")) {
 
-            Author account = new Author("111");
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode vegaSchema = mapper.readTree(visualizations[0]);
-            JsonNode annotationProperties = mapper.readTree(annotations[0]);
-            VegaVisualization visualization = new VegaVisualization( vegaSchema);
-            visualization.setDescription("Example Vega-Lite Visualization #1");
-            VegaVisualization externalVegaVisualization = new VegaVisualization( "1", "http://localhost:3000/visualiaztions/1");
-            externalVegaVisualization.setDescription("External Vega Visualization");
-            externalVegaVisualization.setHash("dafdaa588d418dd2cd81271472c55832f2e29306105e00682a3a88cfb2071ffa");
-            List<VegaPointAnnotation> annotationsList = new LinkedList<>();
-            List<Question> questionList = new LinkedList<>();
-            VegaPointAnnotation annotation = new VegaPointAnnotation("c0382b", annotationProperties.get("note"), annotationProperties.get("data"), annotationProperties.get("subject"));
-            annotationsList.add(annotation);
-            Question question = new Question(mapper.readTree("{\n" +
-                    "  \"type\": \"doc\",\n" +
-                    "  \"content\": [\n" +
-                    "    {\n" +
-                    "      \"type\": \"paragraph\",\n" +
-                    "      \"content\": [\n" +
-                    "        {\n" +
-                    "          \"type\": \"text\",\n" +
-                    "          \"text\": \"This is some inserted text. \uD83D\uDC4B\"\n" +
-                    "        }\n" +
-                    "      ]\n" +
-                    "    }\n" +
-                    "  ]\n" +
-                    "}"), account, annotationsList, new LinkedList<>(), "Test title", new LinkedList<>(), null, annotation.getColor());
-            this.accountRepository.saveAndFlush(account);
-            this.visualizationRepository.saveAndFlush(visualization);
-            this.visualizationRepository.save(externalVegaVisualization);
-            Discussion discussion = new Discussion(account, "Test Discussion", questionList, visualization);
-
-            Discussion discussionExternal = new Discussion(account, "External Discussion", questionList, externalVegaVisualization);
 
 
 
-            this.questionRepository.saveAndFlush(question);
-
-            this.discussionRepository.saveAndFlush(discussion);
-            this.discussionRepository.saveAndFlush(discussionExternal);
 
         }
     }
