@@ -2,8 +2,7 @@ package org.annoml.servant.SpringAnnoMLServant.model.discussion;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.annoml.servant.SpringAnnoMLServant.model.AbstractEntity;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaPointAnnotation;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaRectangleAnnotation;
+import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
@@ -13,7 +12,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Superclass for posts containing a body, an author and a created. The corresponding values for author and created get set
@@ -21,7 +23,6 @@ import java.util.*;
  */
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 public class AbstractPost extends AbstractEntity {
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
@@ -30,14 +31,6 @@ public class AbstractPost extends AbstractEntity {
     @CreatedBy
     @ManyToOne
     private Author author;
-    @CreatedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
-
-    @LastModifiedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date edited;
-
     @OneToMany
     private Set<Author> upVotes;
     @OneToMany
@@ -46,13 +39,13 @@ public class AbstractPost extends AbstractEntity {
 
     @OneToMany(orphanRemoval = true)
     @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
-    private List<VegaPointAnnotation> pointAnnotations;
+    private List<VegaAnnotation> pointAnnotations;
 
     @OneToMany(orphanRemoval = true)
     @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
-    private List<VegaRectangleAnnotation> rectangleAnnotations;
+    private List<VegaAnnotation> rectangleAnnotations;
 
-    public AbstractPost(JsonNode body, Author author, List<VegaPointAnnotation> pointAnnotations, List<VegaRectangleAnnotation> rectangleAnnotations) {
+    public AbstractPost(JsonNode body, Author author, List<VegaAnnotation> pointAnnotations, List<VegaAnnotation> rectangleAnnotations) {
         this.body = body;
         this.author = author;
         this.pointAnnotations = pointAnnotations;
@@ -83,21 +76,6 @@ public class AbstractPost extends AbstractEntity {
         this.author = author;
     }
 
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public Date getEdited() {
-        return edited;
-    }
-
-    public void setEdited(Date edited) {
-        this.edited = edited;
-    }
 
     public Set<Author> getUpVotes() {
         return upVotes;
@@ -118,19 +96,19 @@ public class AbstractPost extends AbstractEntity {
     }
 
 
-    public List<VegaPointAnnotation> getPointAnnotations() {
+    public List<VegaAnnotation> getPointAnnotations() {
         return pointAnnotations;
     }
 
-    public void setPointAnnotations(List<VegaPointAnnotation> pointAnnotations) {
+    public void setPointAnnotations(List<VegaAnnotation> pointAnnotations) {
         this.pointAnnotations = pointAnnotations;
     }
 
-    public List<VegaRectangleAnnotation> getRectangleAnnotations() {
+    public List<VegaAnnotation> getRectangleAnnotations() {
         return rectangleAnnotations;
     }
 
-    public void setRectangleAnnotations(List<VegaRectangleAnnotation> rectangleAnnotations) {
+    public void setRectangleAnnotations(List<VegaAnnotation> rectangleAnnotations) {
         this.rectangleAnnotations = rectangleAnnotations;
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaAnnotation;
 import org.springframework.data.annotation.Id;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -28,9 +29,9 @@ public class CommentDto {
     @NotNull
     private Date date;
     @NonNull
-    private List<VegaPointAnnotationDto> pointAnnotations;
+    private List<VegaAnnotationDto> pointAnnotations;
     @NotNull
-    private List<VegaRectangleAnnotationDto> rectangleAnnotations;
+    private List<VegaAnnotationDto> rectangleAnnotations;
     @NotNull
     private String color;
     private boolean highlighted;

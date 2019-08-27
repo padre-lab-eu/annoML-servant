@@ -8,4 +8,6 @@ import lombok.Setter;
 public class CreateDiscussionDto {
     String reference;
     String url;
+    String hash;
+    String title;
 }

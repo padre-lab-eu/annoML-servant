@@ -2,10 +2,12 @@ package org.annoml.servant.SpringAnnoMLServant.model;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.TypeDef;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -13,13 +15,29 @@ import java.util.Objects;
  */
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 public abstract class AbstractEntity {
     @Id
     @GeneratedValue()
     private Long id;
+    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created;
+
+    @LastModifiedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date edited;
 
     public Long getId() {
         return id;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public Date getEdited() {
+        return edited;
     }
 
     @Override

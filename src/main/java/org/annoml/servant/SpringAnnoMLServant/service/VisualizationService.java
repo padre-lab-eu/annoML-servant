@@ -3,21 +3,18 @@ package org.annoml.servant.SpringAnnoMLServant.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.annoml.servant.SpringAnnoMLServant.dto.VegaVisualizationDto;
 import org.annoml.servant.SpringAnnoMLServant.exception.NotFoundException;
-import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.AbstractVisualization;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.ExternalReferenceVisualization;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.ExternalUrlVisualization;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.VegaVisualization;
-import org.annoml.servant.SpringAnnoMLServant.repository.AuthorRepository;
 import org.annoml.servant.SpringAnnoMLServant.repository.VisualizationRepository;
-import org.hibernate.validator.constraints.URL;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.parser.Entity;
+import javax.xml.ws.Response;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -63,6 +60,8 @@ public class VisualizationService {
         visualizationRepository.saveAndFlush(visualization);
         return visualization;
     }
+
+
 
     // Visualization Helper
 

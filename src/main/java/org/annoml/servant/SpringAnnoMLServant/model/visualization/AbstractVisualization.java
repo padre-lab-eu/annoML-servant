@@ -1,7 +1,6 @@
 package org.annoml.servant.SpringAnnoMLServant.model.visualization;
 
 import org.annoml.servant.SpringAnnoMLServant.model.AbstractEntity;
-import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Entity;
@@ -17,15 +16,15 @@ public class AbstractVisualization extends AbstractEntity {
     }
 
 
+    public AbstractVisualization() { //jpa
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public AbstractVisualization() { //jpa
     }
 
 }

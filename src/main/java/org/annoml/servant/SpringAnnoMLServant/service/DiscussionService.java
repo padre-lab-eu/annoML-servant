@@ -3,8 +3,7 @@ package org.annoml.servant.SpringAnnoMLServant.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.annoml.servant.SpringAnnoMLServant.dto.*;
 import org.annoml.servant.SpringAnnoMLServant.exception.NotFoundException;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaPointAnnotation;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaRectangleAnnotation;
+import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Answer;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Comment;
 import org.annoml.servant.SpringAnnoMLServant.model.discussion.Discussion;
@@ -13,7 +12,6 @@ import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.AbstractVisualization;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.ExternalReferenceVisualization;
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.ExternalUrlVisualization;
-import org.annoml.servant.SpringAnnoMLServant.model.visualization.VegaVisualization;
 import org.annoml.servant.SpringAnnoMLServant.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DiscussionService {
@@ -48,7 +47,8 @@ public class DiscussionService {
         this.modelMapper = modelMapper;
     }
 
-    public List<DiscussionDto> getDiscussions() {
+    public List<DiscussionDto> getDiscussionsByAuthor() {
+
         List<Discussion> discussions = this.discussionRepository.findAll();
         List<DiscussionDto> discussionDtos = new LinkedList<>();
         for (Discussion d : discussions) {
@@ -60,7 +60,36 @@ public class DiscussionService {
 
     public DiscussionDto getDiscussion(Long id) {
         Discussion discussion = this.discussionRepository.findById(id).orElseThrow(() -> new NotFoundException("No discussion found"));
-        return convertToDto(discussion);
+        if (discussion.isPublished()) {
+            return convertToDto(discussion);
+        } else if (getAuthor().equals(discussion.getAuthor())) {
+            return convertToDto(discussion);
+        } else {
+            throw new NotFoundException("Discussion not found");
+        }
+    }
+
+    public DiscussionDto updateDiscussion(Long id, String title, String hash) {
+        Discussion discussion = this.discussionRepository.findById(id).orElseThrow(() -> new NotFoundException("No discussion found"));
+        if (getAuthor().equals(discussion.getAuthor())) {
+            discussion.setPublished(true);
+            discussion.setVisualizationHash(hash);
+            discussion.setTitle(title);
+            discussionRepository.saveAndFlush(discussion);
+            return convertToDto(discussion);
+        } else {
+            throw new NotFoundException("Discussion not found");
+        }
+    }
+
+    public DiscussionDto deleteDiscussion(Long id) {
+        Discussion discussion = this.discussionRepository.findById(id).orElseThrow(() -> new NotFoundException("No discussion found"));
+        if (getAuthor().equals(discussion.getAuthor())) {
+            discussionRepository.delete(discussion);
+            return convertToDto(discussion);
+        } else {
+            throw new AccessDeniedException("Not the discussion author");
+        }
     }
 
 
@@ -69,8 +98,7 @@ public class DiscussionService {
         ExternalReferenceVisualization visualization = visualizationService.addExternalVisualizationById(visualizationId);
         Discussion discussion = new Discussion(author, visualization);
         discussionRepository.saveAndFlush(discussion);
-        DiscussionDto discussionDto = convertToDto(discussion);
-        return discussionDto;
+        return convertToDto(discussion);
     }
 
     public DiscussionDto createDiscussionWithUrl(String visualizationUrl) {
@@ -78,8 +106,7 @@ public class DiscussionService {
         ExternalUrlVisualization visualization = visualizationService.addExternalVisualizationByUrl(visualizationUrl);
         Discussion discussion = new Discussion(author, visualization);
         discussionRepository.saveAndFlush(discussion);
-        DiscussionDto discussionDto = convertToDto(discussion);
-        return discussionDto;
+        return convertToDto(discussion);
     }
 
     public DiscussionDto createDiscussionWithImport(JsonNode schema) {
@@ -91,55 +118,34 @@ public class DiscussionService {
 
     public QuestionDto addQuestion(Long id, QuestionDto questionDto) {
         Discussion discussion = this.discussionRepository.findById(id).orElseThrow(() -> new NotFoundException("No discussion found"));
-        List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
-        for (VegaPointAnnotationDto d : questionDto.getPointAnnotations()) {
+        List<VegaAnnotation> vegaPointAnnotations = new LinkedList<>();
+        for (VegaAnnotationDto d : questionDto.getPointAnnotations()) {
             vegaPointAnnotations.add(convertToEntity(d));
         }
-        List<VegaRectangleAnnotation> vegaRectangleAnnotations = new LinkedList<>();
-        for (VegaRectangleAnnotationDto d : questionDto.getRectangleAnnotations()) {
+        List<VegaAnnotation> vegaRectangleAnnotations = new LinkedList<>();
+        for (VegaAnnotationDto d : questionDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
         Question question = new Question(questionDto.getBody(), getOrCreateAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, questionDto.getTitle(), new LinkedList<>(), questionDto.getColor());
         this.questionRepository.saveAndFlush(question);
         discussion.addQuestion(question);
+        this.discussionRepository.saveAndFlush(discussion);
         return convertToDto(question);
     }
 
     public QuestionDto updateQuestion(Long questionId, QuestionDto questionDto) {
         Question question = this.questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("No question found"));
         if (getAuthor().equals(question.getAuthor())) {
-        List<VegaPointAnnotation> vegaPointAnnotations = question.getPointAnnotations();
-        for (VegaPointAnnotationDto d : questionDto.getPointAnnotations()) {
-            if (this.annotationRepository.findById(d.getId()).isPresent()) {
-                VegaPointAnnotation annotation = (VegaPointAnnotation) this.annotationRepository.findById(d.getId()).get();
-                annotation.setColor(d.getColor());
-                annotation.setData(d.getData());
-                annotation.setNote(d.getNote());
-                annotation.setSubject(d.getSubject());
-            } else {
-                vegaPointAnnotations.add(convertToEntity(d));
-            }
+            updateOrCreateNewAnnotations(question.getPointAnnotations(), questionDto.getPointAnnotations());
+            updateOrCreateNewAnnotations(question.getRectangleAnnotations(), questionDto.getRectangleAnnotations());
+            question.setBody(questionDto.getBody());
+            question.setTitle(questionDto.getTitle());
+            question.setColor(questionDto.getColor());
+            this.questionRepository.saveAndFlush(question);
+            return convertToDto(question);
+        } else {
+            throw new AccessDeniedException("Not the question author");
         }
-        List<VegaRectangleAnnotation> vegaRectangleAnnotations = question.getRectangleAnnotations();
-        for (VegaRectangleAnnotationDto d : questionDto.getRectangleAnnotations()) {
-            if (this.annotationRepository.findById(d.getId()).isPresent()) {
-                VegaRectangleAnnotation annotation = (VegaRectangleAnnotation) this.annotationRepository.findById(d.getId()).get();
-                annotation.setColor(d.getColor());
-                annotation.setData(d.getData());
-                annotation.setNote(d.getNote());
-                annotation.setSubject(d.getSubject());
-            } else {
-                vegaRectangleAnnotations.add(convertToEntity(d));
-            }
-        }
-        question.setBody(questionDto.getBody());
-        question.setTitle(questionDto.getTitle());
-        question.setColor(questionDto.getColor());
-        this.questionRepository.saveAndFlush(question);
-        return convertToDto(question);
-    } else {
-        throw new AccessDeniedException("Not the question author");
-    }
     }
 
     public QuestionDto deleteQuestion(Long questionId) {
@@ -155,12 +161,14 @@ public class DiscussionService {
     public QuestionDto upVoteQuestion(Long questionId) {
         Question question = this.questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("No question found"));
         question.addUpVote(getOrCreateAuthor());
+        this.questionRepository.saveAndFlush(question);
         return convertToDto(question);
     }
 
     public QuestionDto downVoteQuestion(Long questionId) {
         Question question = this.questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("No question found"));
         question.addDownVote(getOrCreateAuthor());
+        this.questionRepository.saveAndFlush(question);
         return convertToDto(question);
     }
 
@@ -192,17 +200,17 @@ public class DiscussionService {
             throw new AccessDeniedException("Not the question author");
         }
         return convertToDto(question);
-        }
+    }
 
 
     public AnswerDto addAnswer(Long questionId, AnswerDto answerDto) {
         Question question = this.questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("No question found"));
-        List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
-        for (VegaPointAnnotationDto d : answerDto.getPointAnnotations()) {
+        List<VegaAnnotation> vegaPointAnnotations = new LinkedList<>();
+        for (VegaAnnotationDto d : answerDto.getPointAnnotations()) {
             vegaPointAnnotations.add(convertToEntity(d));
         }
-        List<VegaRectangleAnnotation> vegaRectangleAnnotations = new LinkedList<>();
-        for (VegaRectangleAnnotationDto d : answerDto.getRectangleAnnotations()) {
+        List<VegaAnnotation> vegaRectangleAnnotations = new LinkedList<>();
+        for (VegaAnnotationDto d : answerDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
         Answer answer = new Answer(answerDto.getBody(), getOrCreateAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, new LinkedList<>(), answerDto.getColor());
@@ -214,34 +222,12 @@ public class DiscussionService {
     public AnswerDto updateAnswer(Long answerId, AnswerDto answerDto) {
         Answer answer = this.answerRepository.findById(answerId).orElseThrow(() -> new NotFoundException("No answer found"));
         if (getAuthor().equals(answer.getAuthor())) {
-        List<VegaPointAnnotation> vegaPointAnnotations = answer.getPointAnnotations();
-        for (VegaPointAnnotationDto d : answerDto.getPointAnnotations()) {
-            if (this.annotationRepository.findById(d.getId()).isPresent()) {
-                VegaPointAnnotation annotation = (VegaPointAnnotation) this.annotationRepository.findById(d.getId()).get();
-                annotation.setColor(d.getColor());
-                annotation.setData(d.getData());
-                annotation.setNote(d.getNote());
-                annotation.setSubject(d.getSubject());
-            } else {
-                vegaPointAnnotations.add(convertToEntity(d));
-            }
-        }
-        List<VegaRectangleAnnotation> vegaRectangleAnnotations = answer.getRectangleAnnotations();
-        for (VegaRectangleAnnotationDto d : answerDto.getRectangleAnnotations()) {
-            if (this.annotationRepository.findById(d.getId()).isPresent()) {
-                VegaRectangleAnnotation annotation = (VegaRectangleAnnotation) this.annotationRepository.findById(d.getId()).get();
-                annotation.setColor(d.getColor());
-                annotation.setData(d.getData());
-                annotation.setNote(d.getNote());
-                annotation.setSubject(d.getSubject());
-            } else {
-                vegaRectangleAnnotations.add(convertToEntity(d));
-            }
-        }
-        answer.setBody(answerDto.getBody());
-        answer.setColor(answer.getColor());
-        this.answerRepository.saveAndFlush(answer);
-        return convertToDto(answer);
+            updateOrCreateNewAnnotations(answer.getPointAnnotations(), answerDto.getPointAnnotations());
+            updateOrCreateNewAnnotations(answer.getRectangleAnnotations(), answerDto.getRectangleAnnotations());
+            answer.setBody(answerDto.getBody());
+            answer.setColor(answer.getColor());
+            this.answerRepository.saveAndFlush(answer);
+            return convertToDto(answer);
         } else {
             throw new AccessDeniedException("Not the answer author");
         }
@@ -271,12 +257,12 @@ public class DiscussionService {
 
     public CommentDto addComment(Long answerId, CommentDto commentDto) {
         Answer answer = this.answerRepository.findById(answerId).orElseThrow(() -> new NotFoundException("No answer found"));
-        List<VegaPointAnnotation> vegaPointAnnotations = new LinkedList<>();
-        for (VegaPointAnnotationDto d : commentDto.getPointAnnotations()) {
+        List<VegaAnnotation> vegaPointAnnotations = new LinkedList<>();
+        for (VegaAnnotationDto d : commentDto.getPointAnnotations()) {
             vegaPointAnnotations.add(convertToEntity(d));
         }
-        List<VegaRectangleAnnotation> vegaRectangleAnnotations = new LinkedList<>();
-        for (VegaRectangleAnnotationDto d : commentDto.getRectangleAnnotations()) {
+        List<VegaAnnotation> vegaRectangleAnnotations = new LinkedList<>();
+        for (VegaAnnotationDto d : commentDto.getRectangleAnnotations()) {
             vegaRectangleAnnotations.add(convertToEntity(d));
         }
         Comment comment = new Comment(commentDto.getBody(), getOrCreateAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, commentDto.getColor());
@@ -288,30 +274,8 @@ public class DiscussionService {
     public CommentDto updateComment(Long answerId, CommentDto commentDto) {
         Comment comment = this.commentRepository.findById(answerId).orElseThrow(() -> new NotFoundException("No comment found"));
         if (getAuthor().equals(comment.getAuthor())) {
-            List<VegaPointAnnotation> vegaPointAnnotations = comment.getPointAnnotations();
-            for (VegaPointAnnotationDto d : commentDto.getPointAnnotations()) {
-                if (this.annotationRepository.findById(d.getId()).isPresent()) {
-                    VegaPointAnnotation annotation = (VegaPointAnnotation) this.annotationRepository.findById(d.getId()).get();
-                    annotation.setColor(d.getColor());
-                    annotation.setData(d.getData());
-                    annotation.setNote(d.getNote());
-                    annotation.setSubject(d.getSubject());
-                } else {
-                    vegaPointAnnotations.add(convertToEntity(d));
-                }
-            }
-            List<VegaRectangleAnnotation> vegaRectangleAnnotations = comment.getRectangleAnnotations();
-            for (VegaRectangleAnnotationDto d : commentDto.getRectangleAnnotations()) {
-                if (this.annotationRepository.findById(d.getId()).isPresent()) {
-                    VegaRectangleAnnotation annotation = (VegaRectangleAnnotation) this.annotationRepository.findById(d.getId()).get();
-                    annotation.setColor(d.getColor());
-                    annotation.setData(d.getData());
-                    annotation.setNote(d.getNote());
-                    annotation.setSubject(d.getSubject());
-                } else {
-                    vegaRectangleAnnotations.add(convertToEntity(d));
-                }
-            }
+            updateOrCreateNewAnnotations(comment.getPointAnnotations(), commentDto.getPointAnnotations());
+            updateOrCreateNewAnnotations(comment.getRectangleAnnotations(), commentDto.getRectangleAnnotations());
             comment.setBody(commentDto.getBody());
             comment.setColor(comment.getColor());
             this.commentRepository.saveAndFlush(comment);
@@ -343,33 +307,32 @@ public class DiscussionService {
         return convertToDto(comment);
     }
 
-    private QuestionDto convertToDto(Question question) {
-        return modelMapper.map(question, QuestionDto.class);
-    }
 
+    private void updateOrCreateNewAnnotations(List<VegaAnnotation> annotations, List<VegaAnnotationDto> annotationDtos) {
+        for (VegaAnnotationDto d : annotationDtos) {
+            Optional<VegaAnnotation> annotation = this.annotationRepository.findById(d.getId());
+            if (annotation.isPresent()) {
+                VegaAnnotation vegaAnnotation = annotation.get();
+                if (annotations.contains(vegaAnnotation)) {
+                    vegaAnnotation.setColor(d.getColor());
+                    vegaAnnotation.setData(d.getData());
+                    vegaAnnotation.setNote(d.getNote());
+                    vegaAnnotation.setSubject(d.getSubject());
+                } else {
+                    throw new IllegalArgumentException("annotation to update is not present");
+                }
+            } else {
+                annotations.add(convertToEntity(d));
+            }
+        }
+    }
 
     private DiscussionDto convertToDto(Discussion discussion) {
         return modelMapper.map(discussion, DiscussionDto.class);
     }
 
-    private Question convertToEntity(QuestionDto questionDto) {
-        return modelMapper.map(questionDto, Question.class);
-    }
-
-    private Answer convertToEntity(AnswerDto answerDto) {
-        return modelMapper.map(answerDto, Answer.class);
-    }
-
-    private VegaPointAnnotation convertToEntity(VegaPointAnnotationDto vegaPointAnnotationDto) {
-        return modelMapper.map(vegaPointAnnotationDto, VegaPointAnnotation.class);
-    }
-
-    private VegaRectangleAnnotation convertToEntity(VegaRectangleAnnotationDto vegaRectangleAnnotationDto) {
-        return modelMapper.map(vegaRectangleAnnotationDto, VegaRectangleAnnotation.class);
-    }
-
-    private VegaVisualizationDto convertToDto(VegaVisualization vegaVisualization) {
-        return modelMapper.map(vegaVisualization, VegaVisualizationDto.class);
+    private QuestionDto convertToDto(Question question) {
+        return modelMapper.map(question, QuestionDto.class);
     }
 
     private AnswerDto convertToDto(Answer answer) {
@@ -381,15 +344,19 @@ public class DiscussionService {
     }
 
 
+    private VegaAnnotation convertToEntity(VegaAnnotationDto vegaAnnotationDto) {
+        return modelMapper.map(vegaAnnotationDto, VegaAnnotation.class);
+    }
+
+
     private Author getAuthor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new AccessDeniedException("no user?!");
         }
-        String authorId =  authentication.getPrincipal().toString();
+        String authorId = authentication.getPrincipal().toString();
 
-        Author author = authorRepository.findAuthorByExternalId(authorId);
-        return author;
+        return authorRepository.findAuthorByExternalId(authorId);
     }
 
     private Author getOrCreateAuthor() {
@@ -397,7 +364,7 @@ public class DiscussionService {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new AccessDeniedException("no user?!");
         }
-        String authorId =  authentication.getPrincipal().toString();
+        String authorId = authentication.getPrincipal().toString();
 
         Author author = authorRepository.findAuthorByExternalId(authorId);
         if (author == null) {
@@ -406,5 +373,6 @@ public class DiscussionService {
         }
         return author;
     }
+
 
 }

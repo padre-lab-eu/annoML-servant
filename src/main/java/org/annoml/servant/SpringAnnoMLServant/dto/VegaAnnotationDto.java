@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class VegaRectangleAnnotationDto {
+public class VegaAnnotationDto {
     @Id
     @NotNull
     private Long id;

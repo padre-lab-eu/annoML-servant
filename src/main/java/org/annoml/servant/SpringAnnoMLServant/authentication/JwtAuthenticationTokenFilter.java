@@ -2,10 +2,7 @@ package org.annoml.servant.SpringAnnoMLServant.authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -28,13 +25,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         final String requestHeader = request.getHeader(tokenHeader);
 
 
-
-            if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
-                String authToken = requestHeader.substring(7);
-                JwtAuthentication authentication = new JwtAuthentication(authToken);
-                SecurityContextHolder.getContext().setAuthentication(authenticationProvider.authenticate(authentication));
-            }
-            chain.doFilter(request, response);
+        if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
+            String authToken = requestHeader.substring(7);
+            JwtAuthentication authentication = new JwtAuthentication(authToken);
+            SecurityContextHolder.getContext().setAuthentication(authenticationProvider.authenticate(authentication));
         }
+        chain.doFilter(request, response);
     }
+}
 

@@ -22,7 +22,4 @@ public class VegaVisualizationDto {
     private String url;
     @JsonProperty
     private String reference;
-    @JsonProperty
-    private String hash;
-
 }

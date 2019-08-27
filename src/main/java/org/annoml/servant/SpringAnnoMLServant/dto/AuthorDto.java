@@ -24,6 +24,7 @@ public class AuthorDto {
     public String getExternalId() {
         return externalId;
     }
+
     @JsonIgnore
     public void setExternalId(String externalId) {
         this.externalId = externalId;

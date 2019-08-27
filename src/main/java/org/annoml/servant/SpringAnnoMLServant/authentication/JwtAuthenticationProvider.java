@@ -11,10 +11,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JwtAuthenticationProvider  implements AuthenticationProvider {
+public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationProvider.class);
-
 
 
     private final JwtTokenService jwtService;

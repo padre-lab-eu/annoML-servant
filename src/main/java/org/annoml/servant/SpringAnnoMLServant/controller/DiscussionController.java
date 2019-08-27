@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@CrossOrigin("http://localhost:9090")
 @RequestMapping("/discussions")
 public class DiscussionController {
     private final DiscussionService discussionService;
@@ -30,6 +29,24 @@ public class DiscussionController {
         return new ResponseEntity<>(discussionService.getDiscussion(id), HttpStatus.OK);
     }
 
+    @RequestMapping(
+            value = "/{id}",
+            method = RequestMethod.PUT,
+            produces = "application/json"
+    )
+    ResponseEntity<DiscussionDto> updateDiscussion(@PathVariable Long id, @RequestBody CreateDiscussionDto createDiscussionDto) {
+        return new ResponseEntity<>(discussionService.updateDiscussion(id, createDiscussionDto.getTitle(), createDiscussionDto.getHash()), HttpStatus.OK);
+    }
+
+    @RequestMapping(
+            value = "/{id}",
+            method = RequestMethod.DELETE,
+            produces = "application/json"
+    )
+    ResponseEntity<DiscussionDto> deleteDiscussion(@PathVariable Long id) {
+        return new ResponseEntity<>(discussionService.deleteDiscussion(id), HttpStatus.OK);
+    }
+
 
     @RequestMapping(
             value = "/create/reference",
@@ -38,7 +55,7 @@ public class DiscussionController {
             produces = "application/json"
     )
     ResponseEntity<DiscussionDto> createDiscussionByReference(@RequestBody CreateDiscussionDto createDiscussionDto) {
-            return new ResponseEntity<>(discussionService.createDiscussionWithReference(createDiscussionDto.getReference()), HttpStatus.CREATED);
+        return new ResponseEntity<>(discussionService.createDiscussionWithReference(createDiscussionDto.getReference()), HttpStatus.CREATED);
 
     }
 
@@ -78,7 +95,7 @@ public class DiscussionController {
 
     @RequestMapping(
             value = "/questions/{questionId}", //
-            method = RequestMethod.POST,
+            method = RequestMethod.PUT,
             consumes = "application/json",
             produces = "application/json"
     )
@@ -97,7 +114,7 @@ public class DiscussionController {
 
     @RequestMapping(
             value = "/questions/{questionId}/vote/up",
-            method = RequestMethod.POST,
+            method = RequestMethod.GET,
             produces = "application/json"
     )
     ResponseEntity<QuestionDto> upvoteQuestion(@PathVariable Long questionId) {
@@ -106,7 +123,7 @@ public class DiscussionController {
 
     @RequestMapping(
             value = "/questions/{questionId}/vote/down",
-            method = RequestMethod.POST,
+            method = RequestMethod.GET,
             produces = "application/json"
     )
     ResponseEntity<QuestionDto> downvoteQuestion(@PathVariable Long questionId) {
@@ -144,7 +161,7 @@ public class DiscussionController {
 
     @RequestMapping(
             value = "/answers/{answerId}/vote/up",
-            method = RequestMethod.POST,
+            method = RequestMethod.GET,
             produces = "application/json"
     )
     ResponseEntity<AnswerDto> upvoteAnswer(@PathVariable Long answerId) {
@@ -153,7 +170,7 @@ public class DiscussionController {
 
     @RequestMapping(
             value = "/answers/{answerId}/vote/down",
-            method = RequestMethod.POST,
+            method = RequestMethod.GET,
             produces = "application/json"
     )
     ResponseEntity<AnswerDto> downvoteAnswer(@PathVariable Long answerId) {
@@ -191,7 +208,7 @@ public class DiscussionController {
 
     @RequestMapping(
             value = "/comments/{commentId}/vote/up",
-            method = RequestMethod.POST,
+            method = RequestMethod.GET,
             produces = "application/json"
     )
     ResponseEntity<CommentDto> upvoteComment(@PathVariable Long commentId) {
@@ -200,7 +217,7 @@ public class DiscussionController {
 
     @RequestMapping(
             value = "/comments/{commentId}/vote/down",
-            method = RequestMethod.POST,
+            method = RequestMethod.GET,
             produces = "application/json"
     )
     ResponseEntity<CommentDto> downvoteComment(@PathVariable Long commentId) {
@@ -209,7 +226,7 @@ public class DiscussionController {
 
     @RequestMapping(
             value = "/questions/{questionId}/highlight/{postId}", //
-            method = RequestMethod.POST,
+            method = RequestMethod.GET,
             produces = "application/json"
     )
     ResponseEntity<QuestionDto> addHighlitedPost(@PathVariable Long questionId, @PathVariable Long postId) {

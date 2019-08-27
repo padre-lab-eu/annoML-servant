@@ -1,6 +1,9 @@
 server:
   port: 9999
 
+client:
+  baseUrl: "http://localhost:9090"
+
 authProvider:
   clientId: "padre"
   clientSecret: "secret"

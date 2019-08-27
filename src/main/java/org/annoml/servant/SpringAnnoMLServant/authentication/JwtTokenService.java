@@ -15,7 +15,6 @@ public class JwtTokenService {
     private String secret;
 
 
-
     @Autowired
     public JwtTokenService(@Value("${authProvider.jwt.secret}") String secret) {
         this.secret = secret;
@@ -47,7 +46,7 @@ public class JwtTokenService {
     }
 
     public Optional<Boolean> validateToken(String token) {
-        return  isTokenNotExpired(token) ? Optional.of(Boolean.TRUE) : Optional.empty();
+        return isTokenNotExpired(token) ? Optional.of(Boolean.TRUE) : Optional.empty();
     }
 
 }

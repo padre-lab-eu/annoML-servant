@@ -24,13 +24,17 @@ public class Discussion extends AbstractEntity {
     private String title;
     @OneToMany(orphanRemoval = true)
     private List<Question> questions;
-    @OneToOne
+    @OneToOne(orphanRemoval = true)
     private AbstractVisualization visualization;
+    private boolean published;
+
+    private String visualizationHash;
 
     public Discussion(Author author, AbstractVisualization visualization) {
         this.author = author;
         this.questions = new LinkedList<>();
         this.visualization = visualization;
+        this.published = false;
     }
 
     public Discussion(Author author, String title, List<Question> questions, AbstractVisualization visualization) {
@@ -38,6 +42,7 @@ public class Discussion extends AbstractEntity {
         this.title = title;
         this.questions = questions;
         this.visualization = visualization;
+        this.published = true;
     }
 
     public Discussion() { // jpa
@@ -75,8 +80,23 @@ public class Discussion extends AbstractEntity {
         this.visualization = visualization;
     }
 
+    public boolean isPublished() {
+        return published;
+    }
+
+    public void setPublished(boolean published) {
+        this.published = published;
+    }
+
     public void addQuestion(Question question) {
         this.questions.add(question);
     }
 
+    public String getVisualizationHash() {
+        return visualizationHash;
+    }
+
+    public void setVisualizationHash(String visualizationHash) {
+        this.visualizationHash = visualizationHash;
+    }
 }

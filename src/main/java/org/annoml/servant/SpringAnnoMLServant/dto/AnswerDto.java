@@ -30,9 +30,9 @@ public class AnswerDto {
     @NotNull
     private Date date;
     @NonNull
-    private List<VegaPointAnnotationDto> pointAnnotations;
+    private List<VegaAnnotationDto> pointAnnotations;
     @NotNull
-    private List<VegaRectangleAnnotationDto> rectangleAnnotations;
+    private List<VegaAnnotationDto> rectangleAnnotations;
     @NotNull
     private String color;
 }

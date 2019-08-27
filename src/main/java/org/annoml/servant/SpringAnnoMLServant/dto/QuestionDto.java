@@ -1,7 +1,6 @@
 package org.annoml.servant.SpringAnnoMLServant.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -13,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -31,12 +31,15 @@ public class QuestionDto {
     private String color;
     private AbstractPost highlighted;
 
+    private Set<AuthorDto> upVotes;
+    private Set<AuthorDto> downVotes;
+
     @NotNull
     private JsonNode body;
     private AuthorDto author;
     @NonNull
-    private List<VegaPointAnnotationDto> pointAnnotations;
+    private List<VegaAnnotationDto> pointAnnotations;
     @NotNull
-    private List<VegaRectangleAnnotationDto> rectangleAnnotations;
+    private List<VegaAnnotationDto> rectangleAnnotations;
 
 }

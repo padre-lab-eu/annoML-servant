@@ -1,12 +1,5 @@
 package org.annoml.servant.SpringAnnoMLServant.init;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaPointAnnotation;
-import org.annoml.servant.SpringAnnoMLServant.model.discussion.Discussion;
-import org.annoml.servant.SpringAnnoMLServant.model.discussion.Question;
-import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
-import org.annoml.servant.SpringAnnoMLServant.model.visualization.VegaVisualization;
 import org.annoml.servant.SpringAnnoMLServant.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -14,9 +7,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Initializes the system with several visualizations and user accounts.
@@ -52,9 +42,6 @@ public class DBInitializer implements ApplicationRunner {
         final String[] annotations = new String[]{"{\"note\":{\"title\":\"Annotation\",\"label\":\"Date: Thu Feb 09 2017 Value: 988.9475\"},\"data\":{\"date\":\"2017-02-09T00:00:00.000Z\",\"value\":988.9475,\"radius\":5},\"color\":\"green\",\"subject\":{\"x\":\"right\"}}"};
         String autofill = environment.getProperty("autofillAtStartup");
         if (autofill != null && autofill.equals("true")) {
-
-
-
 
 
         }

@@ -1,9 +1,7 @@
 package org.annoml.servant.SpringAnnoMLServant.model.visualization;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.hibernate.annotations.Type;
-import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -23,7 +21,8 @@ public class VegaVisualization extends AbstractVisualization {
     }
 
 
-
+    public VegaVisualization() { // jpa
+    }
 
     public JsonNode getSchema() {
         return schema;
@@ -31,10 +30,6 @@ public class VegaVisualization extends AbstractVisualization {
 
     public void setSchema(JsonNode schema) {
         this.schema = schema;
-    }
-
-
-    public VegaVisualization() { // jpa
     }
 
 

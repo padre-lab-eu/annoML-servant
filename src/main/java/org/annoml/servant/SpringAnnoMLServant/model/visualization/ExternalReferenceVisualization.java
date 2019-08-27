@@ -8,11 +8,12 @@ public class ExternalReferenceVisualization extends AbstractVisualization {
 
     private String reference;
 
-    private String hash;
-
     public ExternalReferenceVisualization(String reference) {
         super();
         this.reference = reference;
+    }
+
+    public ExternalReferenceVisualization() { // jpa
     }
 
     public String getReference() {
@@ -23,14 +24,4 @@ public class ExternalReferenceVisualization extends AbstractVisualization {
         this.reference = reference;
     }
 
-    public String getHash() {
-        return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    public ExternalReferenceVisualization() { // jpa
-    }
 }
