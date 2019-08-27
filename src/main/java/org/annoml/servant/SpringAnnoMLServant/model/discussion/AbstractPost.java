@@ -6,6 +6,7 @@ import org.annoml.servant.SpringAnnoMLServant.model.annotation.VegaAnnotation;
 import org.annoml.servant.SpringAnnoMLServant.model.user.Author;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -23,6 +24,7 @@ import java.util.Set;
  */
 
 @Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class AbstractPost extends AbstractEntity {
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
@@ -31,10 +33,12 @@ public class AbstractPost extends AbstractEntity {
     @CreatedBy
     @ManyToOne
     private Author author;
-    @OneToMany
+    @ManyToMany
     private Set<Author> upVotes;
-    @OneToMany
+    @ManyToMany
     private Set<Author> downVotes;
+    @Length(max = 7)
+    private String color;
 
 
     @OneToMany(orphanRemoval = true)
@@ -45,7 +49,8 @@ public class AbstractPost extends AbstractEntity {
     @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
     private List<VegaAnnotation> rectangleAnnotations;
 
-    public AbstractPost(JsonNode body, Author author, List<VegaAnnotation> pointAnnotations, List<VegaAnnotation> rectangleAnnotations) {
+    public AbstractPost(JsonNode body, Author author, List<VegaAnnotation> pointAnnotations, List<VegaAnnotation> rectangleAnnotations, String color) {
+        this.color = color;
         this.body = body;
         this.author = author;
         this.pointAnnotations = pointAnnotations;
@@ -75,15 +80,21 @@ public class AbstractPost extends AbstractEntity {
     public void setAuthor(Author author) {
         this.author = author;
     }
+    public String getColor() {
+        return color;
+    }
 
+    public void setColor(String color) {
+        this.color = color;
+    }
 
     public Set<Author> getUpVotes() {
         return upVotes;
     }
 
     public void addUpVote(Author author) {
-        this.upVotes.add(author);
         this.downVotes.remove(author);
+        this.upVotes.add(author);
     }
 
     public Set<Author> getDownVotes() {
@@ -91,8 +102,8 @@ public class AbstractPost extends AbstractEntity {
     }
 
     public void addDownVote(Author author) {
-        this.downVotes.add(author);
         this.upVotes.remove(author);
+        this.downVotes.add(author);
     }
 
 

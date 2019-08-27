@@ -15,22 +15,12 @@ import java.util.List;
 @Entity
 public class Comment extends AbstractPost {
     @Length(max = 7)
-    private String color;
 
     public Comment(JsonNode body, Author author, List<VegaAnnotation> pointAnnotations, List<VegaAnnotation> rectangleAnnotations, String color) {
-        super(body, author, pointAnnotations, rectangleAnnotations);
-        this.color = color;
+        super(body, author, pointAnnotations, rectangleAnnotations, color);
     }
 
     public Comment() { // jpa
 
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 }

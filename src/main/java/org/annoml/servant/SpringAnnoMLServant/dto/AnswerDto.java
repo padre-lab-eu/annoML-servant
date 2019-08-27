@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,10 +26,10 @@ public class AnswerDto {
     private List<CommentDto> comments;
     @NotNull
     private AuthorDto author;
+    private Set<AuthorDto> upVotes;
+    private Set<AuthorDto> downVotes;
     @NotNull
     private JsonNode body;
-    @NotNull
-    private Date date;
     @NonNull
     private List<VegaAnnotationDto> pointAnnotations;
     @NotNull

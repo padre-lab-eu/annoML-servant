@@ -49,41 +49,6 @@ public class DiscussionController {
 
 
     @RequestMapping(
-            value = "/create/reference",
-            method = RequestMethod.POST,
-            consumes = "application/json",
-            produces = "application/json"
-    )
-    ResponseEntity<DiscussionDto> createDiscussionByReference(@RequestBody CreateDiscussionDto createDiscussionDto) {
-        return new ResponseEntity<>(discussionService.createDiscussionWithReference(createDiscussionDto.getReference()), HttpStatus.CREATED);
-
-    }
-
-
-    @RequestMapping(
-            value = "/create/url",
-            method = RequestMethod.POST,
-            consumes = "application/json",
-            produces = "application/json"
-    )
-    ResponseEntity<DiscussionDto> createDiscussionByUrl(@RequestBody CreateDiscussionDto createDiscussionDto) {
-        return new ResponseEntity<>(discussionService.createDiscussionWithUrl(createDiscussionDto.getUrl()), HttpStatus.CREATED);
-
-    }
-
-
-    @RequestMapping(
-            value = "/create/import", //
-            method = RequestMethod.POST,
-            consumes = "application/json",
-            produces = "application/json"
-    )
-    ResponseEntity<DiscussionDto> createDiscussionByImport(@RequestBody JsonNode schema) {
-        return new ResponseEntity<>(discussionService.createDiscussionWithImport(schema), HttpStatus.CREATED);
-    }
-
-
-    @RequestMapping(
             value = "/{id}/question", //
             method = RequestMethod.POST,
             consumes = "application/json",

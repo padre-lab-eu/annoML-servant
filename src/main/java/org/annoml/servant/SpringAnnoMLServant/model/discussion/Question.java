@@ -25,29 +25,20 @@ public class Question extends AbstractPost {
     @OneToMany(orphanRemoval = true)
     private List<Answer> answers;
 
-    @Length(max = 7)
-    private String color;
     @OneToOne
     private AbstractPost highlighted;
 
     public Question(JsonNode body, Author author, List<VegaAnnotation> pointAnnotations, List<VegaAnnotation> rectangleAnnotations, @NonNull @Length(max = 255) String title, List<Answer> answers, @Length(max = 7) String color) {
-        super(body, author, pointAnnotations, rectangleAnnotations);
+        super(body, author, pointAnnotations, rectangleAnnotations, color);
         this.title = title;
         this.answers = answers;
-        this.color = color;
     }
 
 
     public Question() { //jpa
     } // jpa
 
-    public String getColor() {
-        return color;
-    }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
 
     public List<Answer> getAnswers() {
         return answers;

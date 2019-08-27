@@ -47,7 +47,7 @@ public class DiscussionService {
         this.modelMapper = modelMapper;
     }
 
-    public List<DiscussionDto> getDiscussionsByAuthor() {
+    public List<DiscussionDto> getRecentCreatedDiscussions(int results) {
 
         List<Discussion> discussions = this.discussionRepository.findAll();
         List<DiscussionDto> discussionDtos = new LinkedList<>();
@@ -216,6 +216,7 @@ public class DiscussionService {
         Answer answer = new Answer(answerDto.getBody(), getOrCreateAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, new LinkedList<>(), answerDto.getColor());
         this.answerRepository.saveAndFlush(answer);
         question.addAnswer(answer);
+        this.questionRepository.saveAndFlush(question);
         return convertToDto(answer);
     }
 
@@ -246,12 +247,14 @@ public class DiscussionService {
     public AnswerDto upVoteAnswer(Long answerId) {
         Answer answer = this.answerRepository.findById(answerId).orElseThrow(() -> new NotFoundException("No answer found"));
         answer.addUpVote(getOrCreateAuthor());
+        this.answerRepository.saveAndFlush(answer);
         return convertToDto(answer);
     }
 
     public AnswerDto downVoteAnswer(Long answerId) {
         Answer answer = this.answerRepository.findById(answerId).orElseThrow(() -> new NotFoundException("No answer found"));
         answer.addDownVote(getOrCreateAuthor());
+        this.answerRepository.saveAndFlush(answer);
         return convertToDto(answer);
     }
 
@@ -268,6 +271,7 @@ public class DiscussionService {
         Comment comment = new Comment(commentDto.getBody(), getOrCreateAuthor(), vegaPointAnnotations, vegaRectangleAnnotations, commentDto.getColor());
         this.commentRepository.saveAndFlush(comment);
         answer.addComment(comment);
+        this.answerRepository.saveAndFlush(answer);
         return convertToDto(comment);
     }
 
@@ -298,12 +302,14 @@ public class DiscussionService {
     public CommentDto upVoteComment(Long commentId) {
         Comment comment = this.commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("No comment found"));
         comment.addUpVote(getOrCreateAuthor());
+        this.commentRepository.saveAndFlush(comment);
         return convertToDto(comment);
     }
 
     public CommentDto downVoteComment(Long commentId) {
         Comment comment = this.commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("No comment found"));
         comment.addDownVote(getOrCreateAuthor());
+        this.commentRepository.saveAndFlush(comment);
         return convertToDto(comment);
     }
 

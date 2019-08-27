@@ -14,8 +14,6 @@ public class VegaAnnotationDto {
     @NotNull
     private Long id;
     @NotNull
-    private VegaVisualizationDto visualization;
-    @NotNull
     private String annotationType;
     @NotNull
     private String color;

@@ -16,13 +16,11 @@ import java.util.List;
 public class Answer extends AbstractPost {
     @OneToMany(orphanRemoval = true)
     private List<Comment> comments;
-    @Length(max = 7)
-    private String color;
+
 
     public Answer(JsonNode body, Author author, List<VegaAnnotation> pointAnnotations, List<VegaAnnotation> rectangleAnnotations, List<Comment> comments, String color) {
-        super(body, author, pointAnnotations, rectangleAnnotations);
+        super(body, author, pointAnnotations, rectangleAnnotations, color);
         this.comments = comments;
-        this.color = color;
     }
 
     public Answer() { // jpa
@@ -40,11 +38,4 @@ public class Answer extends AbstractPost {
         this.comments.add(comment);
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
 }
