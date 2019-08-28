@@ -1,6 +1,5 @@
 package org.annoml.servant.SpringAnnoMLServant.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.annoml.servant.SpringAnnoMLServant.dto.*;
 import org.annoml.servant.SpringAnnoMLServant.service.DiscussionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +106,7 @@ public class DiscussionController {
 
     @RequestMapping(
             value = "/answers/{answerId}", //
-            method = RequestMethod.POST,
+            method = RequestMethod.PUT,
             consumes = "application/json",
             produces = "application/json"
     )
@@ -154,7 +153,7 @@ public class DiscussionController {
 
     @RequestMapping(
             value = "/comments/{commentId}", //
-            method = RequestMethod.POST,
+            method = RequestMethod.PUT,
             consumes = "application/json",
             produces = "application/json"
     )
