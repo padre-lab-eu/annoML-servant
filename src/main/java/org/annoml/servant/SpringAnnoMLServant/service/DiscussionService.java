@@ -15,6 +15,7 @@ import org.annoml.servant.SpringAnnoMLServant.model.visualization.ExternalUrlVis
 import org.annoml.servant.SpringAnnoMLServant.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,17 +32,19 @@ public class DiscussionService {
     private final AnswerRepository answerRepository;
     private final CommentRepository commentRepository;
     private final AuthorRepository authorRepository;
+    private final ExternalReferenceVisualizationRepository referenceVisualizationRepository;
     private final AnnotationRepository annotationRepository;
     private final VisualizationService visualizationService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public DiscussionService(DiscussionRepository discussionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, CommentRepository commentRepository, ModelMapper modelMapper, AuthorRepository authorRepository, AnnotationRepository annotationRepository, VisualizationService visualizationService) {
+    public DiscussionService(DiscussionRepository discussionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, CommentRepository commentRepository, ModelMapper modelMapper, AuthorRepository authorRepository, ExternalReferenceVisualizationRepository referenceVisualizationRepository, AnnotationRepository annotationRepository, VisualizationService visualizationService) {
         this.discussionRepository = discussionRepository;
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
         this.commentRepository = commentRepository;
         this.authorRepository = authorRepository;
+        this.referenceVisualizationRepository = referenceVisualizationRepository;
         this.annotationRepository = annotationRepository;
         this.visualizationService = visualizationService;
         this.modelMapper = modelMapper;
@@ -49,13 +52,54 @@ public class DiscussionService {
 
     public List<DiscussionDto> getRecentCreatedDiscussions(int results) {
 
-        List<Discussion> discussions = this.discussionRepository.findAll();
+        List<Discussion> discussions = this.discussionRepository.findAllByPublishedTrueOrderByCreatedDesc( PageRequest.of(0, results));
         List<DiscussionDto> discussionDtos = new LinkedList<>();
         for (Discussion d : discussions) {
             discussionDtos.add(convertToDto(d));
         }
         return discussionDtos;
+    }
 
+    public List<DiscussionDto> getRecentActiveDiscussions(int results) {
+
+        List<Discussion> discussions = this.discussionRepository.findAllByPublishedTrueOrderByEditedDesc(PageRequest.of(0, results));
+        List<DiscussionDto> discussionDtos = new LinkedList<>();
+        for (Discussion d : discussions) {
+            discussionDtos.add(convertToDto(d));
+        }
+        return discussionDtos;
+    }
+
+    public List<DiscussionDto> getRecentCreatedDiscussionsByAuthor(int results) {
+        List<Discussion> discussions = this.discussionRepository.findAllByAuthorAndPublishedTrueOrderByCreatedDesc(getAuthor(), PageRequest.of(0, results));
+        List<DiscussionDto> discussionDtos = new LinkedList<>();
+        for (Discussion d : discussions) {
+            discussionDtos.add(convertToDto(d));
+        }
+        return discussionDtos;
+    }
+
+    public List<DiscussionDto> getRecentActiveDiscussionsByAuthor(int results) {
+        List<Discussion> discussions = this.discussionRepository.findAllByAuthorAndPublishedTrueOrderByEditedDesc(getAuthor(), PageRequest.of(0, results));
+        List<DiscussionDto> discussionDtos = new LinkedList<>();
+        for (Discussion d : discussions) {
+            discussionDtos.add(convertToDto(d));
+        }
+        return discussionDtos;
+    }
+
+    public List<DiscussionDto> getCreatedDiscussionsByVisualizationReference(String reference) {
+        List<ExternalReferenceVisualization> visualizations = this.referenceVisualizationRepository.findAllByReferenceOrderByCreatedDesc(reference);
+        List<DiscussionDto> discussionDtos = new LinkedList<>();
+
+        for (ExternalReferenceVisualization visualization : visualizations) {
+            List<Discussion> discussions = this.discussionRepository.findAllByVisualization_IdAndPublishedTrue(visualization.getId());
+            for (Discussion d : discussions) {
+                discussionDtos.add(convertToDto(d));
+            }
+        }
+
+        return discussionDtos;
     }
 
     public DiscussionDto getDiscussion(Long id) {

@@ -43,6 +43,7 @@ public class VisualizationService {
         return convertToDto(visualization);
     }
 
+
     public ExternalReferenceVisualization addExternalVisualizationById(String visualizationId) {
         ExternalReferenceVisualization visualization = new ExternalReferenceVisualization(visualizationId);
         visualizationRepository.saveAndFlush(visualization);

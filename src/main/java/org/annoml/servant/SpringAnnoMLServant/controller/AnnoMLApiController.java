@@ -29,14 +29,14 @@ public class AnnoMLApiController {
     ResponseEntity<List<DiscussionDto>> getRecentCreatedDiscussions(@RequestParam("results") int results) {
         return new ResponseEntity<>(discussionService.getRecentCreatedDiscussions(results), HttpStatus.OK);
     }
-/*
+
     @RequestMapping(
             value = "/discussions/active",
             method = RequestMethod.GET,
             produces = "application/json"
     )
-    ResponseEntity<List<DiscussionDto>> getRecentActiveDiscussions(@RequestParam("results") Long results) {
-        return new ResponseEntity<>(discussionService.getRecentCreatedDiscussions(results), HttpStatus.OK);
+    ResponseEntity<List<DiscussionDto>> getRecentActiveDiscussions(@RequestParam("results") int results) {
+        return new ResponseEntity<>(discussionService.getRecentActiveDiscussions(results), HttpStatus.OK);
     }
 
     @RequestMapping(
@@ -44,8 +44,8 @@ public class AnnoMLApiController {
             method = RequestMethod.GET,
             produces = "application/json"
     )
-    ResponseEntity<List<DiscussionDto>> getRecentCreatedDiscussions(@RequestParam("results") Long results) {
-        return new ResponseEntity<>(discussionService.getRecentCreatedDiscussionsbyAuthor(results), HttpStatus.OK);
+    ResponseEntity<List<DiscussionDto>> getRecentCreatedDiscussionsByAuthor(@RequestParam("results") int results) {
+        return new ResponseEntity<>(discussionService.getRecentCreatedDiscussionsByAuthor(results), HttpStatus.OK);
     }
 
     @RequestMapping(
@@ -53,10 +53,21 @@ public class AnnoMLApiController {
             method = RequestMethod.GET,
             produces = "application/json"
     )
-    ResponseEntity<List<DiscussionDto>> getRecentActiveDiscussions(@RequestParam("results") Long results) {
-        return new ResponseEntity<>(discussionService.getRecentCreatedDiscussionsByAuthor(results), HttpStatus.OK);
+    ResponseEntity<List<DiscussionDto>> getRecentActiveDiscussionsByAuthor(@RequestParam("results") int results) {
+        return new ResponseEntity<>(discussionService.getRecentActiveDiscussionsByAuthor(results), HttpStatus.OK);
     }
-*/
+
+    @RequestMapping(
+            value = "/discussions/visualizations/{reference}",
+            method = RequestMethod.GET,
+            produces = "application/json"
+    )
+    ResponseEntity<List<DiscussionDto>> getDiscussionsByVisualizationReference(@PathVariable String reference) {
+        return new ResponseEntity<>(discussionService.getCreatedDiscussionsByVisualizationReference(reference), HttpStatus.OK);
+    }
+
+
+
 
     @RequestMapping(
             value = "/create/reference",
