@@ -5,9 +5,6 @@ client:
   baseUrl: "http://localhost:9090"
 
 authProvider:
-  clientId: "padre"
-  clientSecret: "secret"
-  tokenEndpoint: "http://localhost:8080/oauth/check_token"
   jwt:
     header: Authorization
     secret: annoml
