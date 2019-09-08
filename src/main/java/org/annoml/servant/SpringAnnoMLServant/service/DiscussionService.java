@@ -52,7 +52,7 @@ public class DiscussionService {
 
     public List<DiscussionDto> getRecentCreatedDiscussions(int results) {
 
-        List<Discussion> discussions = this.discussionRepository.findAllByPublishedTrueOrderByCreatedDesc( PageRequest.of(0, results));
+        List<Discussion> discussions = this.discussionRepository.findAllByPublishedTrueOrderByCreatedDesc(PageRequest.of(0, results));
         List<DiscussionDto> discussionDtos = new LinkedList<>();
         for (Discussion d : discussions) {
             discussionDtos.add(convertToDto(d));
@@ -237,7 +237,7 @@ public class DiscussionService {
     }
 
     public QuestionDto removeHighlightedPost(Long questionId) {
-        Question question = this.questionRepository.findById(questionId).get();
+        Question question = this.questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("No question found"));
         if (question.getAuthor().equals(getAuthor())) {
             question.setHighlighted(null);
         } else {

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NonNull;
 
-public class AuthorDto {
+class AuthorDto {
     private Long id;
     @NonNull
     @JsonProperty

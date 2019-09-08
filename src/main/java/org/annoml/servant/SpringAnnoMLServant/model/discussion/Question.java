@@ -39,7 +39,6 @@ public class Question extends AbstractPost {
     } // jpa
 
 
-
     public List<Answer> getAnswers() {
         return answers;
     }

@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Component
 public class JwtTokenService {
-    private String secret;
+    private final String secret;
 
 
     @Autowired
@@ -24,11 +24,11 @@ public class JwtTokenService {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    public Date getExpirationDateFromToken(String token) {
+    private Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+    private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }

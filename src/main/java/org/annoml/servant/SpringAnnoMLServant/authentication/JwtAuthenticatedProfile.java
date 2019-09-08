@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class JwtAuthenticatedProfile implements Authentication {
+class JwtAuthenticatedProfile implements Authentication {
     private final String username;
 
     public JwtAuthenticatedProfile(String username) {

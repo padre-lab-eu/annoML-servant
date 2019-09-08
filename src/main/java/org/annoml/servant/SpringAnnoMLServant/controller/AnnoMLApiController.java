@@ -67,8 +67,6 @@ public class AnnoMLApiController {
     }
 
 
-
-
     @RequestMapping(
             value = "/create/reference",
             method = RequestMethod.POST,

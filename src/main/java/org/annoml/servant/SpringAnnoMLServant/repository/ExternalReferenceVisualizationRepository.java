@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface ExternalReferenceVisualizationRepository extends JpaRepository<ExternalReferenceVisualization, Long> {
-    public List<ExternalReferenceVisualization> findAllByReferenceOrderByCreatedDesc(String reference);
+    List<ExternalReferenceVisualization> findAllByReferenceOrderByCreatedDesc(String reference);
 }

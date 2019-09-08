@@ -18,7 +18,7 @@ import java.util.Objects;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AbstractEntity {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)

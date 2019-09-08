@@ -1,12 +1,8 @@
 package org.annoml.servant.SpringAnnoMLServant.repository;
 
 import org.annoml.servant.SpringAnnoMLServant.model.visualization.AbstractVisualization;
-import org.annoml.servant.SpringAnnoMLServant.model.visualization.ExternalReferenceVisualization;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 
 @Repository

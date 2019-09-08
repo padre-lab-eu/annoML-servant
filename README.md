@@ -1,17 +1,18 @@
 # annoML Servant
-This repository contains the Spring Boot Server which servese the **annoML Service API** for the [annoML](https://gitlab.thomb.org/thomborg/annoml) client. 
+This repository contains the Spring Boot Server which serves the **annoML Service API** for the [annoML](https://gitlab.thomb.org/thomborg/annoml) client. 
 
 ## Requirements
 - Java 8 JDK
 - Apache Maven
-- Running PostgresSQL
+- PostgreSQL
 
 ## Configuration
-There are two configuration files in src/main/resources.
+Two configuration files exist in src/main/resources.
+
 Use `application.yml` to specify the configuration of the annoML Service.
 
 ### JWT Authentication
-Provide here the shared secret between your authentication service and the annoML service
+The shared secret between your authentication service and the annoML service must be provided.
 ````
 authProvider:
   jwt:
@@ -20,17 +21,18 @@ authProvider:
 ````
 
 
-### Prosgres Database
-Provide here a database table e.g. named annoml and its user configuration.
+### PostgreSQL Database
+A database host, the targeted database and table name must be specified here.
     
     url: jdbc:postgresql://localhost:5432/annoml
     username: annoml
-    password: AnnoML
+    password: password
 
 
-## Development run
-Simply run `mvn spring-boot:run
+## Development server
+Simply run `mvn spring-boot:run`.
 
-## Building
+## Building for production
 Run `mvn package`.
-You'll find the compiled build in the `target/` folder then.
+
+You will find the compiled build in the `target/` folder.

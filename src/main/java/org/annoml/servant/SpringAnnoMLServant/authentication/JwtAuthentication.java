@@ -5,7 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
-public class JwtAuthentication implements Authentication {
+class JwtAuthentication implements Authentication {
     private final String token;
 
     public JwtAuthentication(String token) {

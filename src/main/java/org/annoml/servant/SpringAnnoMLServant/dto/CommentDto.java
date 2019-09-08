@@ -2,7 +2,6 @@ package org.annoml.servant.SpringAnnoMLServant.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.format.annotation.DateTimeFormat;

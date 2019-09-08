@@ -8,12 +8,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +45,7 @@ public class AbstractPost extends AbstractEntity {
     @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
     private List<VegaAnnotation> rectangleAnnotations;
 
-    public AbstractPost(JsonNode body, Author author, List<VegaAnnotation> pointAnnotations, List<VegaAnnotation> rectangleAnnotations, String color) {
+    AbstractPost(JsonNode body, Author author, List<VegaAnnotation> pointAnnotations, List<VegaAnnotation> rectangleAnnotations, String color) {
         this.color = color;
         this.body = body;
         this.author = author;
@@ -80,6 +76,7 @@ public class AbstractPost extends AbstractEntity {
     public void setAuthor(Author author) {
         this.author = author;
     }
+
     public String getColor() {
         return color;
     }

@@ -4,7 +4,6 @@ import org.annoml.servant.SpringAnnoMLServant.model.AbstractEntity;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Entity;
-import javax.persistence.MappedSuperclass;
 
 @Entity
 public class AbstractVisualization extends AbstractEntity {
@@ -17,7 +16,7 @@ public class AbstractVisualization extends AbstractEntity {
     }
 
 
-    public AbstractVisualization() { //jpa
+    AbstractVisualization() { //jpa
     }
 
     public String getDescription() {

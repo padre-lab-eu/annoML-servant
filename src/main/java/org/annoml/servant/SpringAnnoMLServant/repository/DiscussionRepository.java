@@ -10,11 +10,17 @@ import java.util.List;
 
 @Repository
 public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
-    public List<Discussion> findAll();
-    public List<Discussion> findAllByPublishedTrue();
-    public List<Discussion> findAllByPublishedTrueOrderByCreatedDesc(Pageable pageable);
-    public List<Discussion> findAllByPublishedTrueOrderByEditedDesc(Pageable pageable);
-    public List<Discussion> findAllByAuthorAndPublishedTrueOrderByCreatedDesc(Author author, Pageable pageable);
-    public List<Discussion> findAllByAuthorAndPublishedTrueOrderByEditedDesc(Author author, Pageable pageable);
-    public List<Discussion> findAllByVisualization_IdAndPublishedTrue(Long id);
+    List<Discussion> findAll();
+
+    List<Discussion> findAllByPublishedTrue();
+
+    List<Discussion> findAllByPublishedTrueOrderByCreatedDesc(Pageable pageable);
+
+    List<Discussion> findAllByPublishedTrueOrderByEditedDesc(Pageable pageable);
+
+    List<Discussion> findAllByAuthorAndPublishedTrueOrderByCreatedDesc(Author author, Pageable pageable);
+
+    List<Discussion> findAllByAuthorAndPublishedTrueOrderByEditedDesc(Author author, Pageable pageable);
+
+    List<Discussion> findAllByVisualization_IdAndPublishedTrue(Long id);
 }

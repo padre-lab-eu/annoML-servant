@@ -10,11 +10,8 @@ import org.annoml.servant.SpringAnnoMLServant.model.visualization.VegaVisualizat
 import org.annoml.servant.SpringAnnoMLServant.repository.VisualizationRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.parser.Entity;
-import javax.xml.ws.Response;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,7 +58,6 @@ public class VisualizationService {
         visualizationRepository.saveAndFlush(visualization);
         return visualization;
     }
-
 
 
     // Visualization Helper
