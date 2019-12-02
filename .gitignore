@@ -17,7 +17,6 @@
 
 # Maven
 log/
-target/
 
 # Compiled class file
 *.class
@@ -34,6 +33,7 @@ target/
 # Package Files #
 *.jar
 *.war
+
 *.ear
 *.zip
 *.tar.gz
